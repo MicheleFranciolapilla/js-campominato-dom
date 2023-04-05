@@ -1,0 +1,190 @@
+/* DICHIARAZIONE VARIABILI */
+:root
+{
+    /* VARIABILI DIMENSIONALI */
+    --header_height     : 6vh;
+    --footer_height     : 4vh; 
+    --game_grid_side    : 80vh; 
+    --rows              : 0; /* Valore modificato direttamente da main.js*/
+    --game_grid_gap     : 3px; 
+    /* VARIABILI CROMATICHE */
+    --main_color        : #7FFFD4; 
+    --h_f_color         : #FFFFFF;
+    --btn_color         : rgb(169, 165, 165); 
+    --grid_bg_color     : rgb(23, 22, 22);
+    --cell_color        : lightgray; 
+    --clicked_cell_col  : rgb(113, 152, 164);
+    --cell_border_col1  : rgb(95, 92, 92);
+    --cell_border_col2  : rgb(225, 169, 169);
+}
+
+.slim_btn
+{
+    color: black;
+    padding: 0.3rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid blue;
+    background-color: var(--btn_color);
+}
+
+.ok_btn
+{
+    color: yellow;
+    padding: 0.5rem 2rem;
+    border-radius: 0.5rem;
+    border: 5px solid yellow;
+    background-color: var(--btn_color);
+    cursor: pointer;
+}
+
+.slim_btn:hover,
+.ok_btn:hover
+{
+    background-color: blue;
+    color: white;
+    border-color: white;
+}
+
+#message_box
+{
+    z-index: 1001;
+    gap: 2rem;
+    font-size: 0.7rem;
+    color: yellow;
+    background-color: gray;
+    padding: 1rem;
+    border: 5px solid yellow;
+}
+
+#overlay
+{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+header
+{
+    height: var(--header_height);
+    background-color: var(--h_f_color);
+    padding-right: 1rem;
+}
+
+header > #logo_group, 
+header > nav
+{
+    height: 100%;
+}
+
+header > #logo_group > img
+{
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+header > nav
+{
+    gap:    1rem;
+}
+
+main
+{
+    height: calc(100% - var(--header_height) - var(--footer_height));
+    background-color: var(--main_color);
+}
+
+#side_menu_bar
+{
+    flex-basis: calc((100% - var(--game_grid_side)) / 2);
+    order: 0;
+}
+
+#side_info_bar
+{
+    flex-basis: calc((100% - var(--game_grid_side)) / 4);
+    margin-left: 10px;
+    order: 2;
+}
+
+#side_menu_bar > #side_menu_list,
+#side_info_bar > #side_info_list
+{
+    border: 5px solid rgb(93, 91, 91);
+    border-radius: 0.5rem;
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+#side_menu_bar > #side_menu_list > .menu_item
+{
+    width: 3rem;
+    aspect-ratio: 1;
+    background-color: var(--cell_color);
+    text-align: center; 
+    line-height: 3rem;
+    font-size: 2rem;
+    border: 3px solid gray;
+    border-radius: 0.5rem;
+}
+
+#side_info_bar > #side_info_list > .info_item
+{
+    height: 3rem;
+    padding: 0 0.5rem;
+    background-color: var(--cell_color);
+    text-align: left;
+    line-height: 3rem;
+    font-size: 1.5rem;
+    border: 3px solid gray;
+    border-radius: 0.5rem;
+}
+
+#side_menu_bar > #side_menu_list > .menu_item > a
+{
+    color: white;
+}
+
+#side_menu_bar > #side_menu_list > .menu_item > a:hover
+{
+    color: blue;
+}
+
+main > #game_grid
+{
+    flex-basis: var(--game_grid_side);
+    background-color: var(--grid_bg_color);
+    padding: calc(var(--game_grid_gap) * 2);
+    gap: var(--game_grid_gap);
+}
+
+main > #game_grid > .cell
+{
+    aspect-ratio: 1;
+    cursor: pointer;
+    flex-basis: calc((100% - ((var(--rows) - 1) * var(--game_grid_gap))) / var(--rows));
+    background-color: var(--cell_color);
+    border-right : 5px solid var(--cell_border_col1);
+    border-bottom : 5px solid var(--cell_border_col1);
+    border-left : 5px solid var(--cell_border_col2);
+    border-top : 5px solid var(--cell_border_col2);
+}
+
+main > #game_grid > .cell.clicked_cell
+{
+    cursor: default;
+    background-color: var(--clicked_cell_col);
+    border-right : 5px solid var(--cell_border_col2);
+    border-bottom : 5px solid var(--cell_border_col2);
+    border-left : 5px solid var(--cell_border_col1);
+    border-top : 5px solid var(--cell_border_col1);
+}
+
+footer
+{
+    height: var(--footer_height);
+    background-color: var(--h_f_color);
+    padding-left: 1rem;
+    column-gap: 0.5rem;
+}

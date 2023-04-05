@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Link a Font Awesome 6.4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Link ai fogli di stile -->
+    <link rel="stylesheet" href="assets/css/reset_and_utilities.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <title>Campo minato</title>
+</head>
+<body>
+    <div id="message_box" class="d_none p_abs p_center">
+        <h2>Messaggio all'utente</h2>
+        <button id="msg_btn" class="ok_btn" type="button">OK</button>
+    </div>
+    <div id="web_app" class="p_rel web_app_size">
+        <div id="overlay" class="d_none p_abs"></div>
+        <header class="d_flex flex_main_btw">
+            <div id="logo_group" class="d_flex flex_main_btw flex_cross_center">
+                <img src="assets/img/mobile-logo.png" alt="Logo Boolean">
+                <h1 class="d_ib">Campo Minato</h1>
+            </div>
+            <nav class="d_flex flex_cross_center">
+                <select id="random_number_select" name="random_number">
+                    <option value="">-- Distribuzione punti --</option>
+                    <option value="random_nr_no">Ordinati (default)</option>
+                    <option value="random_nr_yes">Casuale</option>
+                </select>
+                <select id="rows_number_select" name="row_number">
+                    <option value="">-- Numero di righe --</option>
+                    <option value="r_10">10 righe (default)</option>
+                    <option value="r_9">9 righe</option>
+                    <option value="r_7">7 righe</option>
+                </select>
+                <select id="bombs_number_select" name="bombs_number">
+                    <option value="">-- Presenza di celle minate --</option>
+                    <option value="no_bombs">Nessuna bomba (default)</option>
+                    <option value="bombs_10">10%</option>
+                    <option value="bombs_25">25%</option>
+                    <option value="bombs_50">50%</option>
+                </select>
+                <a href="#" class="slim_btn reset_decor" onclick="go_to_game(false)">Play</a>
+                <a href="#" class="slim_btn reset_decor" onclick="go_to_game(true)">Classico</a>
+            </nav>
+        </header>
+        <main id="main_core" class="d_flex flex_main_start flex_cross_center">
+            <aside id="side_menu_bar" class="d_none">
+                <ul id="side_menu_list" class="reset_list_style d_flex flex_column">
+                    <li class="menu_item">
+                        <a id="help_btn" class="reset_decor" href="#">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </a>
+                    </li>
+                    <li class="menu_item">
+                        <a id="stop_btn" class="reset_decor" href="#">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            <aside id="side_info_bar" class="d_none">
+                <ul id="side_info_list" class="reset_list_style d_flex flex_column">
+                    <li class="info_item">
+                        <span>Punti: <span id="score_info"></span></span>
+                    </li>
+                    <li class="info_item">
+                        <span>Celle: <span id="cells_info"></span></span>
+                    </li>
+                    <li class="info_item">
+                        <span>Random: <span id="order_info"></span></span>
+                    </li>
+                    <li class="info_item">
+                        <span>Bombe: <span id="bombs_info"></span></span>
+                    </li>
+                </ul>
+            </aside>
+        </main>
+        <footer class="p_fixed_footer d_flex flex_cross_center">
+            <span>Made with <span style="color: red">&hearts;</span> by </span>
+            <a href="#">Boolean</a>
+        </footer>
+    </div>
+
+    <!-- File di script dedicato -->
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

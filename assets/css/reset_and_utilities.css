@@ -1,0 +1,501 @@
+/***************************************************************************************************************/
+/******* FOGLIO DI STILE CONTENENTE CLASSI CON FUNZIONI DI RESET ATTRIBUTI, DEBUG E FUNZIONI DI UTILITIES ******/
+/***************************************************************************************************************/
+
+/***********************************/
+/********** SEZIONE RESET **********/
+/***********************************/
+
+/********************************/
+/* *{} (reset box) */
+/* .reset_font */
+/* .reset_list_style */
+/* .reset_decor */
+/********************************/
+
+/* Reset degli attributi box */
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ritorno al font di default */
+.reset_font{
+    font-family: initial;
+}
+
+/* Reset dei marcatori di lista */
+.reset_list_style{
+    list-style: none;
+}
+
+/* Reset decorazione di testo */
+.reset_decor{
+    text-decoration: none;
+}
+
+/****************************************/
+/**********　SEZIONE DEBUG***************/
+/****************************************/
+
+/********************************/
+/* .debug_y */
+/* .debug_r */
+/* .debug_g */
+/* .debug_b */
+/* .debug_p */
+/* .debug_o */
+/* .debug_bg_y */
+/* .debug_bg_r */
+/* .debug_bg_g */
+/* .debug_bg_b */
+/* .debug_bg_p */
+/* .debug_bg_o */
+/********************************/
+
+/* Debug bordo giallo*/
+.debug_y{
+    border: 5px solid yellow;
+}
+
+/* Debug bordo rosso*/
+.debug_r{
+    border: 5px solid red;
+}
+
+/* Debug bordo verde*/
+.debug_g{
+    border: 5px solid green;
+}
+
+/* Debug bordo blu*/
+.debug_b{
+    border: 5px solid blue;
+}
+
+/* Debug bordo pink*/
+.debug_p{
+    border: 5px solid pink;
+}
+
+/* Debug bordo arancio*/
+.debug_o{
+    border: 5px solid orange;
+}
+/* Debug sfondo giallo */
+.debug_bg_y{
+    background-color: yellow;
+}
+
+/* Debug sfondo rosso */
+.debug_bg_r{
+    background-color: red;
+}
+
+/* Debug sfondo verde */
+.debug_bg_g{
+    background-color: green;
+}
+
+/* Debug sfondo blu */
+.debug_bg_b{
+    background-color: blue;
+}
+
+/* Debug sfondo pink */
+.debug_bg_p{
+    background-color: pink;
+}
+
+/* Debug sfondo arancio */
+.debug_bg_o{
+    background-color: orange;
+}
+/****************************************/
+/**********　SEZIONE UTILITIES **********/
+/****************************************/
+
+/********** FLOAT E CLEARFIX **********/
+/* .float_l */
+/* .float_r */
+/* .clearfix::after (both) */
+/**************************************/
+
+/* Float left */
+.float_l{
+    float: left;
+}
+
+/* Float right */
+.float_r{
+    float: right;
+}
+
+/* Clearfix "both" */
+.clearfix::after{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/********** POSITION **********/
+/* .p_rel */
+/* .p_abs */
+/* .p_top_right */
+/* .p_top_left */
+/* .p_bottom_right */
+/* .p_bottom_left */
+/* .p_center */
+/* .p_fixed */
+/* .p_fixed_header */
+/* .p_fixed_footer */
+/* .p_sticky */
+/*****************************/
+
+/* Position relative */
+.p_rel{
+    position: relative;
+}
+
+/* Position absolute */
+.p_abs{
+    position: absolute;
+}
+
+/* Posizionamento (absolute), angolo alto/dx */
+.p_top_right{
+    top: 0;
+    right: 0;
+}
+
+/* Posizionamento (absolute), angolo alto/sx */
+.p_top_left{
+    top: 0;
+    left: 0;
+}
+
+/* Posizionamento (absolute), angolo basso/dx */
+.p_bottom_right{
+    bottom: 0;
+    right: 0;
+}
+
+/* Posizionamento (absolute), angolo basso/sx */
+.p_bottom_left{
+    bottom: 0;
+    left: 0;
+}
+
+/* Posizionamento al centro */
+.p_center{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Position fixed */
+.p_fixed{
+    position: fixed;
+}
+
+/* Header fixed e in primo piano */
+.p_fixed_header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+
+/* Footer fixed e in primo piano */
+.p_fixed_footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+
+/* Position sticky */
+.p_sticky{
+    position: sticky;
+}
+
+/********** DISPLAY & FLEX UTILITIES **********/
+/* .d_none */
+/* .d_ib */
+/* .d_block */
+/* .d_if */
+/* .d_flex */
+/* .flex_column */
+/* .flex_wrap */
+/* .flex_main_center */
+/* .flex_main_btw */
+/* .flex_main_evenly */
+/* .flex_main_around */
+/* .flex_main_start */
+/* .flex_main_end */
+/* .flex_cross_center */
+/* .flex_compact_center */
+/* .flex_center */
+/* .flex_compact */
+/* .flex_cross_start */
+/* .flex_compact_start */
+/* .flex_cross_end */
+/* .flex_compact_end */
+/* .flex_cross_stretch */
+/* .flex_content_stretch */
+/* .flex_cross_btw */
+/* .flex_cross_evenly */
+/* .flex_cross_around */
+/* .flex_self_center */
+/* .flex_self_start */
+/* .flex_self_end */
+/**********************************************/
+
+/* Display none */
+.d_none{
+    display:none;
+}
+
+/* Display inline block */
+.d_ib{
+    display: inline-block;
+}
+
+/* Display block */
+.d_block{
+    display: block;
+}
+
+/* Display inline flex */
+.d_if{
+    display: inline-flex;
+}
+
+/* Display flex */
+.d_flex{
+    display: flex;
+}
+
+/* Flexbox in colonne */
+.flex_column{
+    flex-direction: column;
+}
+
+/* Flexbox wrap */
+.flex_wrap{
+    flex-wrap: wrap;
+}
+
+/* Flexbox con elementi al centro del　main axis */
+.flex_main_center{
+    justify-content: center;
+}
+
+/* Flexbox con main axis "space between" */
+.flex_main_btw{
+    justify-content: space-between;
+}
+
+/* Flexbox con main axis "space evenly" */
+.flex_main_evenly{
+    justify-content: space-evenly;
+}
+
+/* Flexbox con main axis "space around" */
+.flex_main_around{
+    justify-content: space-around;
+}
+
+/* Flexbox con main axis "flex-start */
+.flex_main_start{
+    justify-content: flex-start;
+}
+
+/* Flexbox con main axis "flex-end */
+.flex_main_end{
+    justify-content: flex-end;
+}
+
+/* Flex Items a simmetria centrale sul cross axis */
+.flex_cross_center{
+    align-items: center;
+}
+
+/* Flex Items compattati al centro del cross axis */
+.flex_compact_center{
+    align-content: center;
+}
+
+/* Doppia centratura main/cross axis (cross axis in simmetria)*/
+.flex_center{
+    justify-content: center;
+    align-items: center;
+}
+
+/* Compattamento centrato main/cross axis */
+.flex_compact{
+    justify-content: center;
+    align-content: center;
+}
+
+/* Flex Items posizionati all'inizio del cross axis */
+.flex_cross_start{
+    align-items: flex-start;
+}
+
+/* Flex Items compattati all'inizio del cross axis */
+.flex_compact_start{
+    align-content: flex-start;
+}
+
+/* Flex Items posizionati alla fine del cross axis */
+.flex_cross_end{
+    align-items: flex-end;
+}
+
+/* Flex Items compattati alla fine del cross axis */
+.flex_compact_end{
+    align-content: flex-end;
+}
+
+/* Flex Items distesi sul cross axis */
+.flex_cross_stretch{
+    align-items: stretch;
+}
+
+/* Saturazione del cross axis con coppie (item/gap) */
+.flex_content_stretch{
+    align-content: stretch;
+}
+
+/* Effetto "space-between" sul cross axis */
+.flex_cross_btw{
+    align-content: space-between;
+}
+
+/* Effetto "space-evenly" sul cross axis */
+.flex_cross_evenly{
+    align-content: space-evenly;
+}
+
+/* Effetto "space-around" sul cross axis */
+.flex_cross_around{
+    align-content: space-around;
+}
+
+/* Posizionamento "center" del flex item, sul cross axis */
+.flex_self_center{
+    align-self: center;
+}
+
+/* Posizionamento "flex-start" del flex item, sul cross axis */
+.flex_self_start{
+    align-self: flex-start;
+}
+
+/* Posizionamento "flex-end" del flex item, sul cross axis */
+.flex_self_end{
+    align-self: flex-end;
+}
+/********** BLOCK UTILITIES **********/
+/* .center_text */
+/* .center_block */
+/* .square_box */
+/* .web_app_size */
+/* .width_80 */
+/* .width_70 */
+/* .width_60 */
+/* .width_50 */
+/* .width_40 */
+/* .m_top_3 */
+/* .m_top_10 */
+/* .m_top_20 */
+/* .padd_v_5 */
+/* .padd_v_10 */
+/* .padd_v_15 */
+/* .padd_h_5 */
+/* .padd_h_10 */
+/* .padd_h_15 */
+/*************************************/
+
+.center_text{
+    text-align: center;
+}
+
+.center_block{
+    margin: 0 auto;
+}
+
+.square_box{
+    aspect-ratio: 1;
+}
+
+.web_app_size{
+    width: 100%;
+    height: 100vh;
+}
+
+.width_80{
+    width: 80%;
+}
+
+.width_70{
+    width: 70%;
+}
+
+.width_60{
+    width: 60%;
+}
+
+.width_50{
+    width: 50%;
+}
+
+.width_40{
+    width: 40%;
+}
+
+.m_top_3{
+    margin-top: 3vh;
+}
+
+.m_top_10{
+    margin-top: 10vh;
+}
+
+.m_top_20{
+    margin-top: 20vh;
+}
+
+.padd_v_5{
+    padding-top: 5%;
+    padding-bottom: 5%;
+}
+
+.padd_v_10{
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
+
+.padd_v_15{
+    padding-top: 15%;
+    padding-bottom: 15%;
+}
+
+.padd_h_5{
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.padd_h_10{
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.padd_h_15{
+    padding-left: 15%;
+    padding-right: 15%;
+}
