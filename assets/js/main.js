@@ -19,6 +19,7 @@
 const   plain_mode          = false; 
 const   classic_mode        = true; 
 let     game_mode           = plain_mode; 
+let     classic_game_array  = []; 
 
 const   rows_10             = 10; 
 const   rows_9              = 9;
@@ -240,7 +241,7 @@ function check_border_proximity(item_index)
     return 0;
 }
 
-function neighbors(item_index)
+function neighborhood(item_index)
 {
     let grid_border = check_border_proximity(item_index);
     let result_array = [];
@@ -311,9 +312,9 @@ function neighbors(item_index)
 function set_classic_cell(item_index)
 {
     // Acquisizione array di prossimita'
-    let neighbor_array = neighbors(item_index);
-    console.log(`elemento nr ${item_index}`);
-    console.log(`elementi vicini ${neighbor_array}`);
+    let neighbor_array = neighborhood(item_index);
+    // console.log(`elemento nr ${item_index}`);
+    // console.log(`elementi vicini ${neighbor_array}`);
     // Passiamo al setaccio l'array di prossimita' per contare il numero di bombe e scriverlo nell'elemento dato
     let bombs_around = 0;
     for (let i = 0; i < neighbor_array.length; i++)
@@ -337,16 +338,30 @@ function set_classic_data()
             current_cell.innerHTML = `<h6 class="d_none">${set_classic_cell(i)}</h6>`;
         }
     }
+}
 
-    // for (let i = 0; i < cells_total; i++)
+function classic_game(item_index)
+{
+    console.log(item_index);
+    let current_item = play_ground.querySelector(`.cell:nth-child(${item_index})`);
+    classic_game_array += neighborhood(item_index);
+    current_item.querySelector("h6").classList.remove("d_none");
+    current_item.classList.add("clicked_cell");
+    
+
+    // let mystr = current_item.querySelector("h6");
+    // console.log(mystr.firstChild);
+    // if (current_item.querySelector("h6").value == 0)
     // {
-    //     let current_cell = classic_mode_array[i];
-    //     if (!current_cell.classList.contains("with_bomb"))
-    //     {
-    //         check_bombs_around(i);
-    //     }
-    //     console.log(current_cell);
+    //     current_item.classList.add("current");
+    //     classic_game_array += neighborhood(item_index);
+    //     console.log(classic_game_array);
     // }
+    score++;
+    show_info();
+    cells_clicked++;
+    check_clicked_nr();
+
 }
 
 function create_game_grid()
@@ -403,11 +418,18 @@ function create_game_grid()
             {
                 if (!this.classList.contains("with_bomb"))
                 {
-                    this.classList.add("clicked_cell");
-                    score++;
-                    show_info();
-                    cells_clicked++;
-                    check_clicked_nr();
+                    if (game_mode == classic_mode)
+                    {
+                        classic_game(i);
+                    }
+                    else
+                    {
+                        this.classList.add("clicked_cell");
+                        score++;
+                        show_info();
+                        cells_clicked++;
+                        check_clicked_nr();
+                    }
                 }
                 else
                 {
@@ -473,6 +495,10 @@ function show_message(message)
 function go_to_game(is_classic)
 {
     game_mode = is_classic;
+    if (game_mode == classic_mode)
+    {
+        classic_game_array = [];
+    }
     if (!game_grid_exists)
     {
         // Significa che la griglia non c'e' e che non si sta giocando, quindi si puo' iniziare
