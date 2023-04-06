@@ -19,7 +19,7 @@
 const   plain_mode          = false; 
 const   classic_mode        = true; 
 let     game_mode           = plain_mode; 
-let     classic_mode_array  = [];
+
 const   rows_10             = 10; 
 const   rows_9              = 9;
 const   rows_7              = 7;
@@ -209,24 +209,19 @@ function toggle_select()
     document.getElementById("bombs_number_select").classList.toggle("d_none");
 }
 
-function check_bombs_around(index)
-{
-    
-}
-
-function set_classic_data()
-{
-    classic_mode_array = play_ground.querySelectorAll(".cell");
-    for (let i = 0; i < cells_total; i++)
-    {
-        let current_cell = classic_mode_array[i];
-        if (!current_cell.classList.contains("with_bomb"))
-        {
-            check_bombs_around(i);
-        }
-        console.log(current_cell);
-    }
-}
+// function set_classic_data()
+// {
+//     classic_mode_array = play_ground.querySelectorAll(".cell");
+//     for (let i = 0; i < cells_total; i++)
+//     {
+//         let current_cell = classic_mode_array[i];
+//         if (!current_cell.classList.contains("with_bomb"))
+//         {
+//             check_bombs_around(i);
+//         }
+//         console.log(current_cell);
+//     }
+// }
 
 function create_game_grid()
 {
@@ -234,10 +229,6 @@ function create_game_grid()
     exploded = false;
     cells_clicked = 0;
     cells_total = Math.pow(rows_nr, 2);
-    if (release_numbers == release_random)
-    {
-        create_boolean_array();
-    }
     switch (document.getElementById("random_number_select").value)
     {
         case "random_nr_no":
@@ -245,6 +236,7 @@ function create_game_grid()
             break;
         case "random_nr_yes":
             release_numbers = release_random;
+            create_boolean_array();
             break;
     }
     switch (document.getElementById("bombs_number_select").value)
@@ -322,7 +314,7 @@ function create_game_grid()
     }
     document.querySelector("#main_core").append(play_ground);
     toggle_select();
-    set_classic_data();
+    // set_classic_data();
 }
 
 msg_btn.addEventListener("click", function()
