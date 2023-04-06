@@ -209,19 +209,133 @@ function toggle_select()
     document.getElementById("bombs_number_select").classList.toggle("d_none");
 }
 
-// function set_classic_data()
-// {
-//     classic_mode_array = play_ground.querySelectorAll(".cell");
-//     for (let i = 0; i < cells_total; i++)
-//     {
-//         let current_cell = classic_mode_array[i];
-//         if (!current_cell.classList.contains("with_bomb"))
-//         {
-//             check_bombs_around(i);
-//         }
-//         console.log(current_cell);
-//     }
-// }
+function check_border_proximity(item_index)
+{
+    // Nello switch si esaminano i casi in cui l'elemento indirizzato da "item_index" si trovi agli angoli della griglia
+    switch (item_index)
+    {
+        // Angolo superiore sinistro
+        case 1:
+            return 1;
+        // Angolo superiore destro
+        case rows_nr:
+            return 2;
+        // Angolo inferiore destro
+        case cells_total:
+            return 3;
+        // Angolo inferiore sinistro
+        case (cells_total - rows_nr + 1):
+            return 4;
+    }
+    // Nei seguenti "if" si esaminano i casi in cui l'elemento si trovi lungo i bordi della griglia
+    // Bordo superiore
+    if (item_index < rows_nr) return 5;
+    // Bordo destro
+    if (item_index % rows_nr == 0) return 6;
+    // Bordo inferiore
+    if (item_index > cells_total - rows_nr) return 7;
+    // Bordo sinistro
+    if ((item_index - 1) % rows_nr == 0) return 8;
+    // Elemento lontano dai bordi
+    return 0;
+}
+
+function neighbors(item_index)
+{
+    let grid_border = check_border_proximity(item_index);
+    let result_array = [];
+    // Si individuano tutte le celle limitrofe alla cella con indice "item_index" e le si inserisce in un array, in senso orario. Si tiene conto del fatto che la cella data potrebbe trovarsi su un bordo o in un angolo.
+    switch (grid_border)
+    {
+        case 1:
+            result_array.push(item_index + 1);
+            result_array.push(item_index + rows_nr + 1);
+            result_array.push(item_index + rows_nr);
+            break;
+        case 2:
+            result_array.push(item_index + rows_nr);         
+            result_array.push(item_index + rows_nr - 1);            
+            result_array.push(item_index - 1);            
+            break;
+        case 3:
+            result_array.push(item_index - 1);         
+            result_array.push(item_index - rows_nr - 1);            
+            result_array.push(item_index - rows_nr);            
+            break;
+        case 4:
+            result_array.push(item_index - rows_nr + 1);         
+            result_array.push(item_index + 1);            
+            result_array.push(item_index - rows_nr);            
+            break;
+        case 5:
+            result_array.push(item_index + 1);         
+            result_array.push(item_index + rows_nr + 1);         
+            result_array.push(item_index + rows_nr);         
+            result_array.push(item_index + rows_nr - 1);         
+            result_array.push(item_index - 1);         
+            break;
+        case 6:
+            result_array.push(item_index + rows_nr);         
+            result_array.push(item_index + rows_nr - 1);         
+            result_array.push(item_index - 1);         
+            result_array.push(item_index - rows_nr - 1);         
+            result_array.push(item_index - rows_nr);         
+            break;
+        case 7:
+            result_array.push(item_index - rows_nr + 1);         
+            result_array.push(item_index + 1);         
+            result_array.push(item_index - 1);         
+            result_array.push(item_index - rows_nr - 1);         
+            result_array.push(item_index - rows_nr);         
+            break;
+        case 8:
+            result_array.push(item_index - rows_nr + 1);         
+            result_array.push(item_index + 1);         
+            result_array.push(item_index + rows_nr + 1);         
+            result_array.push(item_index + rows_nr);         
+            result_array.push(item_index - rows_nr);         
+            break;
+        default:
+            result_array.push(item_index - rows_nr + 1);         
+            result_array.push(item_index + 1);         
+            result_array.push(item_index + rows_nr + 1);         
+            result_array.push(item_index + rows_nr);         
+            result_array.push(item_index + rows_nr - 1);         
+            result_array.push(item_index - 1);         
+            result_array.push(item_index - rows_nr - 1);         
+            result_array.push(item_index - rows_nr);         
+    }
+    return result_array;
+}
+
+function set_classic_cell(item_index)
+{
+    let neighbor_array = neighbors(item_index);
+    console.log(`elemento nr ${item_index}`);
+    console.log(`elementi vicini ${neighbor_array}`);
+}
+
+function set_classic_data()
+{
+    for (let i = 1; i <= cells_total; i++)
+    {
+        let current_cell = play_ground.querySelector(`.cell:nth-child(${i})`);
+        if (!current_cell.classList.contains("with_bomb"))
+        {
+            set_classic_cell(i);
+        }
+    }
+
+    // for (let i = 0; i < cells_total; i++)
+    // {
+    //     let current_cell = classic_mode_array[i];
+    //     if (!current_cell.classList.contains("with_bomb"))
+    //     {
+    //         check_bombs_around(i);
+    //     }
+    //     console.log(current_cell);
+    // }
+}
 
 function create_game_grid()
 {
@@ -312,9 +426,12 @@ function create_game_grid()
     {
         load_bombs();
     }
+    if (game_mode == classic_mode)
+    {
+        set_classic_data();
+    }
     document.querySelector("#main_core").append(play_ground);
     toggle_select();
-    // set_classic_data();
 }
 
 msg_btn.addEventListener("click", function()
