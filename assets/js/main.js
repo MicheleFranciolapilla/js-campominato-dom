@@ -310,9 +310,21 @@ function neighbors(item_index)
 
 function set_classic_cell(item_index)
 {
+    // Acquisizione array di prossimita'
     let neighbor_array = neighbors(item_index);
     console.log(`elemento nr ${item_index}`);
     console.log(`elementi vicini ${neighbor_array}`);
+    // Passiamo al setaccio l'array di prossimita' per contare il numero di bombe e scriverlo nell'elemento dato
+    let bombs_around = 0;
+    for (let i = 0; i < neighbor_array.length; i++)
+    {
+        let current_neighbor = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`);
+        if (current_neighbor.classList.contains("with_bomb"))
+        {
+            bombs_around++;
+        }
+    }
+    return bombs_around;
 }
 
 function set_classic_data()
@@ -322,7 +334,7 @@ function set_classic_data()
         let current_cell = play_ground.querySelector(`.cell:nth-child(${i})`);
         if (!current_cell.classList.contains("with_bomb"))
         {
-            set_classic_cell(i);
+            current_cell.innerHTML = `<h6 class="d_none">${set_classic_cell(i)}</h6>`;
         }
     }
 
