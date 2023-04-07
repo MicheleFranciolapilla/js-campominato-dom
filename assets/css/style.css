@@ -47,6 +47,7 @@
 
 #message_box
 {
+    width: 30%;
     z-index: 1001;
     gap: 2rem;
     font-size: 0.7rem;

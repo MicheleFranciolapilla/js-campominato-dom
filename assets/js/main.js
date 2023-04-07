@@ -40,6 +40,9 @@ const   explosion_gif       = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosio
 const   bomb_fa_icon        = '<i class="fa-solid fa-bomb fa-beat fa-2xl" style="color: #ff0000;"></i>';
 const   stop_fa_icon        = '<i class="fa-solid fa-xmark"></i>'; 
 
+const   side_bars_show      = true; 
+const   side_bars_hide      = false; 
+
 let     score               = 0; 
 let     cells_total         = 0; 
 let     cells_valid         = 0; 
@@ -48,6 +51,7 @@ let     game_grid_exists    = false;
 let     game_on_going       = false;
 const   value_available     = true;
 let     exploded            = false; 
+let     won                 = false; 
 let     boolean_array       = []; 
 let     play_ground;
 
@@ -71,49 +75,41 @@ function new_element(what, class_array, value_)
 function reset_game()
 {
     play_ground.remove();
-    hide_menu_bar();
-    hide_info_bar();
+    toggle_side_bars(side_bars_hide);
     toggle_select();
     game_grid_exists = false;
 }
 
-function check_clicked_nr()
+function check_if_win()
 {
     if (cells_clicked == cells_valid)
     {
         // Termina partita
+        won = true;
         show_message(`Complimenti, hai vinto, totalizzando ${score} punti`);
-        game_on_going = false;
-        reset_game();
+        // game_on_going = false;
+        // reset_game();
     }
 }
 
-function hide_menu_bar()
+function toggle_side_bars(show_or_hide)
 {
     let menu_bar = document.getElementById("side_menu_bar");
-    menu_bar.classList.remove("d_flex","flex_main_center");
-    menu_bar.classList.add("d_none");
-}
-
-function show_menu_bar()
-{
-    let menu_bar = document.getElementById("side_menu_bar");
-    menu_bar.classList.remove("d_none");
-    menu_bar.classList.add("d_flex","flex_main_center");
-}
-
-function hide_info_bar()
-{
     let info_bar = document.getElementById("side_info_bar");
-    info_bar.classList.remove("d_flex","flex_main_center");
-    info_bar.classList.add("d_none");
-}
-
-function show_info_bar()
-{
-    let info_bar = document.getElementById("side_info_bar");
-    info_bar.classList.remove("d_none");
-    info_bar.classList.add("d_flex","flex_main_center");
+    if (show_or_hide == side_bars_show)
+    {
+        menu_bar.classList.remove("d_none");
+        menu_bar.classList.add("d_flex","flex_main_center");
+        info_bar.classList.remove("d_none");
+        info_bar.classList.add("d_flex","flex_main_center");
+    }
+    else
+    {
+        menu_bar.classList.remove("d_flex","flex_main_center");
+        menu_bar.classList.add("d_none");
+        info_bar.classList.remove("d_flex","flex_main_center");
+        info_bar.classList.add("d_none");
+    }
 }
 
 function release_str()
@@ -128,7 +124,7 @@ function release_str()
     }
 }
 
-function show_info()
+function update_info()
 {
     document.getElementById("score_info").innerText = score;
     document.getElementById("cells_info").innerText = cells_total;
@@ -355,11 +351,11 @@ function classic_game(item_index)
 
         // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
         score++;
-        show_info();
+        update_info();
         current_item.classList.add("clicked_cell");
         current_item.querySelector("h6").classList.remove("d_none");
         cells_clicked++;
-        check_clicked_nr();
+        check_if_win();
         if (current_item.querySelector("h6").innerHTML == "0")
         {
             let neighbor_array = neighborhood(item);
@@ -397,6 +393,7 @@ function create_game_grid()
 {
     score = 0;
     exploded = false;
+    won = false;
     cells_clicked = 0;
     cells_total = Math.pow(rows_nr, 2);
     switch (document.getElementById("random_number_select").value)
@@ -434,9 +431,8 @@ function create_game_grid()
     play_ground = document.createElement("div");
     play_ground.setAttribute("id", "game_grid");
     play_ground.classList.add("d_flex", "flex_wrap", "flex_main_btw");
-    show_menu_bar();
-    show_info_bar();
-    show_info();
+    toggle_side_bars(side_bars_show);
+    update_info();
     for (let i = 1; i <= cells_total; i++)
     {
         let free_value = randomize_value(i);
@@ -455,9 +451,9 @@ function create_game_grid()
                     {
                         this.classList.add("clicked_cell");
                         score++;
-                        show_info();
+                        update_info();
                         cells_clicked++;
-                        check_clicked_nr();
+                        check_if_win();
                     }
                 }
                 else
@@ -504,7 +500,7 @@ msg_btn.addEventListener("click", function()
     msg_box.classList.add("d_none");
     let page_overlay = document.getElementById("overlay");
     page_overlay.classList.toggle("d_none");
-    if (exploded)
+    if ((exploded) || (won))
     {
         game_on_going = false;
         reset_game();
