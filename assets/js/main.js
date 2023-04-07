@@ -342,26 +342,53 @@ function set_classic_data()
 
 function classic_game(item_index)
 {
-    console.log(item_index);
-    let current_item = play_ground.querySelector(`.cell:nth-child(${item_index})`);
-    classic_game_array += neighborhood(item_index);
-    current_item.querySelector("h6").classList.remove("d_none");
-    current_item.classList.add("clicked_cell");
-    
+    let item = item_index;
+    classic_game_array.push(item);
+    console.log("indice della cella cliccata: ",item);
+    console.log("Array iniziale: ",classic_game_array);
 
-    // let mystr = current_item.querySelector("h6");
-    // console.log(mystr.firstChild);
-    // if (current_item.querySelector("h6").value == 0)
-    // {
-    //     current_item.classList.add("current");
-    //     classic_game_array += neighborhood(item_index);
-    //     console.log(classic_game_array);
-    // }
-    score++;
-    show_info();
-    cells_clicked++;
-    check_clicked_nr();
+      do
+      {
+        let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
+        console.log("cella cliccata: ", current_item);
 
+        // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
+        score++;
+        show_info();
+        current_item.classList.add("clicked_cell");
+        current_item.querySelector("h6").classList.remove("d_none");
+        cells_clicked++;
+        check_clicked_nr();
+        if (current_item.querySelector("h6").innerHTML == "0")
+        {
+            let neighbor_array = neighborhood(item);
+            console.log("indici dei vicini: ", neighbor_array);
+            for (let i = 0; i < neighbor_array.length; i++)
+            {
+                let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
+                console.log("Indice del vicino analizzato: ",neighbor_array[i]);
+                console.log("Elemento vicino analizzato: ",neighbor_item);
+
+                if ((!neighbor_item.classList.contains("clicked_cell")) && (!classic_game_array.includes(neighbor_array[i])))
+                {
+                    classic_game_array.push(neighbor_array[i]);
+                    console.log("Aggiunta indice all'array: ",classic_game_array);
+                }
+            }
+            classic_game_array.splice(0,1);
+            item = classic_game_array[0];
+        }
+        else
+        {
+            classic_game_array.splice(0,1);
+        }
+
+
+      }
+      while (classic_game_array.length > 0);
+
+
+    console.log("Array finale: ",classic_game_array);
 }
 
 function create_game_grid()
