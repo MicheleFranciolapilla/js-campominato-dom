@@ -342,13 +342,14 @@ function set_classic_data()
 
 function classic_game(item_index)
 {
-    let item = item_index;
-    classic_game_array.push(item);
-    console.log("indice della cella cliccata: ",item);
+    classic_game_array.push(item_index);
+    console.log("indice della cella cliccata: ",item_index);
     console.log("Array iniziale: ",classic_game_array);
 
       do
       {
+        let item = classic_game_array[0];
+        console.log("Nuovo elemento: ",item);
         let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
         console.log("cella cliccata: ", current_item);
 
@@ -375,14 +376,15 @@ function classic_game(item_index)
                     console.log("Aggiunta indice all'array: ",classic_game_array);
                 }
             }
-            classic_game_array.splice(0,1);
-            item = classic_game_array[0];
-        }
-        else
-        {
-            classic_game_array.splice(0,1);
-        }
 
+
+        }
+        // else
+        // {
+        //     classic_game_array.splice(0,1);
+        // }
+        classic_game_array.splice(0,1);
+        console.log("Dopo rimozione elemento 0: ", classic_game_array);
 
       }
       while (classic_game_array.length > 0);
