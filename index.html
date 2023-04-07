@@ -27,26 +27,17 @@
                 <h1 class="d_ib">Campo Minato</h1>
             </div>
             <nav class="d_flex flex_cross_center">
-                <select id="random_number_select" name="random_number">
-                    <option value="">-- Distribuzione punti --</option>
-                    <option value="random_nr_no">Ordinati (default)</option>
-                    <option value="random_nr_yes">Casuale</option>
-                </select>
                 <select id="rows_number_select" name="row_number">
-                    <option value="">-- Numero di righe --</option>
-                    <option value="r_10">10 righe (default)</option>
-                    <option value="r_9">9 righe</option>
-                    <option value="r_7">7 righe</option>
+                    <option value="r_10" selected> Griglia 10X10 </option>
+                    <option value="r_9"> Griglia 9X9 </option>
+                    <option value="r_7"> Griglia 7X7 </option>
                 </select>
                 <select id="bombs_number_select" name="bombs_number">
-                    <option value="">-- Presenza di celle minate --</option>
-                    <option value="no_bombs">Nessuna bomba (default)</option>
-                    <option value="bombs_10">10%</option>
-                    <option value="bombs_25">25%</option>
-                    <option value="bombs_50">50%</option>
+                    <option value="bombs_10" selected> Bombe: 10% </option>
+                    <option value="bombs_25"> Bombe: 25% </option>
+                    <option value="bombs_50"> Bombe 50% </option>
                 </select>
-                <a href="#" class="slim_btn reset_decor" onclick="go_to_game(false)">Play</a>
-                <a href="#" class="slim_btn reset_decor" onclick="go_to_game(true)">Classico</a>
+                <a href="#" class="slim_btn reset_decor" onclick="go_to_game()">Play</a>
             </nav>
         </header>
         <main id="main_core" class="d_flex flex_main_start flex_cross_center">
@@ -73,17 +64,13 @@
                         <span>Celle: <span id="cells_info"></span></span>
                     </li>
                     <li class="info_item">
-                        <span>Random: <span id="order_info"></span></span>
-                    </li>
-                    <li class="info_item">
                         <span>Bombe: <span id="bombs_info"></span></span>
                     </li>
                 </ul>
             </aside>
         </main>
         <footer class="p_fixed_footer d_flex flex_cross_center">
-            <span>Made with <span style="color: red">&hearts;</span> by </span>
-            <a href="#">Boolean</a>
+            <span>Developed by <span style="color: red; font-weight: 600;">Aki A.c.p.</span></span>
         </footer>
     </div>
 

@@ -1,14 +1,15 @@
 // Consegna
-// L'utente clicca su un bottone che genererà una griglia di gioco quadrata.
-// Ogni cella ha un numero progressivo, da 1 a 100.
-// Ci saranno quindi 10 caselle per ognuna delle 10 righe.
-// Quando l'utente clicca su ogni cella, la cella cliccata si colora di azzurro ed emetto un messaggio in console con il numero della cella cliccata.
-// Bonus
+// Copiamo la griglia fatta ieri nella nuova repo e aggiungiamo la logica del gioco (attenzione: non bisogna copiare tutta la cartella dell'esercizio ma solo l'index.html, e le cartelle js/ css/ con i relativi script e fogli di stile, per evitare problemi con l'inizializzazione di git).
+// Il computer deve generare 16 numeri casuali nello stesso range della difficoltà prescelta: le bombe. Attenzione: nella stessa cella può essere posizionata al massimo una bomba, perciò nell’array delle bombe non potranno esserci due numeri uguali.
+// In seguito l'utente clicca su una cella: se il numero è presente nella lista dei numeri generati - abbiamo calpestato una bomba - la cella si colora di rosso e la partita termina. Altrimenti la cella cliccata si colora di azzurro e l'utente può continuare a cliccare sulle altre celle.
+// La partita termina quando il giocatore clicca su una bomba o quando raggiunge il numero massimo possibile di numeri consentiti (ovvero quando ha rivelato tutte le celle che non sono bombe).
+// Al termine della partita il software deve comunicare il punteggio, cioè il numero di volte che l’utente ha cliccato su una cella che non era una bomba.
+// BONUS:
 // Aggiungere una select accanto al bottone di generazione, che fornisca una scelta tra tre diversi livelli di difficoltà:
-// - con difficoltà 1 => 100 caselle, con un numero compreso tra 1 e 100, divise in 10 caselle per 10 righe;
-// - con difficoltà 2 => 81 caselle, con un numero compreso tra 1 e 81, divise in 9 caselle per 9 righe;
-// - con difficoltà 3 => 49 caselle, con un numero compreso tra 1 e 49, divise in 7 caselle per 7 righe;
-// Consigli del giorno:  :party_wizard:
+// - difficoltà 1 ⇒ 100 caselle, con un numero compreso tra 1 e 100, divise in 10 caselle per 10 righe;
+// - difficoltà 2 ⇒ 81 caselle, con un numero compreso tra 1 e 81, divise in 9 caselle per 9 righe;
+// - difficoltà 3 ⇒ 49 caselle, con un numero compreso tra 1 e 49, divise in 7 caselle per 7 righe;
+// Consigli del giorno: :party_wizard:
 // Scriviamo prima cosa vogliamo fare passo passo in italiano, dividiamo il lavoro in micro problemi.
 // Ad esempio:
 // Di cosa ho bisogno per generare i numeri?
@@ -19,13 +20,7 @@
 
 // COSTANTI E VARIABILI GLOBALI
 
-// Sezione relativa al gioco classico:
-// Costanti semantiche indicanti il tipo di gioco: se classico o no!
-const   plain_mode          = false; 
-const   classic_mode        = true; 
-// Variabile indicante il tipo di gioco
-let     game_mode           = plain_mode; 
-// Array dinamico, usato solo nel gioco classico, contenente gli indici delle celle che dovranno espandersi
+// Array dinamico contenente gli indici delle celle che dovranno espandersi
 let     classic_game_array  = []; 
 
 // Sezione relativa al numero di righe:
@@ -36,23 +31,13 @@ const   rows_7              = 7;
 // Variabile indicante il numero di righe selezionato
 let     rows_nr             = rows_10;
 
-// Sezione relativa alla distribuzione degli indici di cella:
-// Costanti semantiche indicanti il tipo di distribuzione: ordinata o casuale.
-// N.B. La distribuzione degli indici di cella viene ignorata in caso di gioco classico
-// Costanti semantiche indicanti il tipo di distribuzione degli indici di cella 
-const   release_random      = true;
-const   release_ordered     = false;
-// Variabile indicante il tipo di distribuzione degli indici di cella
-let     release_numbers     = release_ordered;
-
 // Sezione relativa alla quantità di bombe presenti nel gioco:
 // Costanti semantiche, di tipo stringa, indicanti la percentuale di bombe presenti nel gioco
-const   bombs_0             = "Nessuna";
 const   bombs_easy          = "10%";
 const   bombs_medium        = "25%";
 const   bombs_hard          = "50%";
 // Variabili (stringa e numerica) indicanti il numero di bombe presenti nel gioco
-let     bombs_str           = bombs_0;   
+let     bombs_str           = bombs_easy;   
 let     bombs_number        = 0;  
 // Immagine ".gif" utilizzata alla conclusione del gioco dovuta a click su cella minata
 const   explosion_gif       = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosion.gif"; 
@@ -75,10 +60,6 @@ let     cells_clicked       = 0;
 let     game_grid_exists    = false;
 // Variabile booleana indicante lo status dell'ultimo gioco: concluso o ancora in corso
 let     game_on_going       = false;
-// Costante semantica usata nel gioco con distribuzione casuale degli indici di cella, che identifica gli indici liberi (occupabili)
-const   value_available     = true;
-// Variabile array usata nel gioco con distribuzione casuale degli indici di cella
-let     boolean_array       = []; 
 // Variabili booleane usate in fase di conclusione gioco, rispettivamente per sconfitta o per vittoria
 let     exploded            = false; 
 let     won                 = false; 
@@ -146,25 +127,11 @@ function toggle_side_bars(show_or_hide)
     }
 }
 
-// Funzione che produce una stringa (usata nella infobar laterale) indicante il tipo di distribuzione (casuale o ordinata) degli indici di cella
-function release_str()
-{
-    if (release_numbers == release_ordered)
-    {
-        return "No";
-    }
-    else
-    {
-        return "Sì";
-    }
-}
-
 // Funzione che aggiorna le informazioni relativa alla partita in corso
 function update_info()
 {
     document.getElementById("score_info").innerText = score;
     document.getElementById("cells_info").innerText = cells_total;
-    document.getElementById("order_info").innerText = release_str();
     document.getElementById("bombs_info").innerText = bombs_number;
 }
 
@@ -172,38 +139,6 @@ function update_info()
 function random_int(max)
 {
     return Math.floor(Math.random() * max);
-}
-
-// Funzione utilizzata nel gioco con distribuzione casuale degli indici di cella. Essa genera un array, usato poi per allocare in maniera randomica le celle all'interno della griglia di gioco
-function create_boolean_array()
-{
-    boolean_array = [];
-    for (let index = 0; index < cells_total; index++)
-    {
-        boolean_array.push(value_available);
-    }
-}
-
-// La funzione "randomize_value" restituisce il valore ricevuto come parametro (se la distribuzione delle celle e' ordinata) oppure un valore randomico nel caso di distribuzione casuale
-function randomize_value(index)
-{
-    if (release_numbers == release_ordered)
-    {
-        return index;
-    }
-    else
-    {
-        let random_value = 0;
-        let bool_value = !value_available;
-        // Il seguente ciclo while scansiona l'array di appoggio alla ricerca di un numero disponibile da assegnare alla cella randomica
-        while (bool_value == !value_available)
-        {
-            random_value = random_int(cells_total) + 1;
-            bool_value = boolean_array[random_value];
-        }
-        boolean_array[random_value] = !value_available;
-        return random_value;
-    }
 }
 
 // Funzione che crea le celle minate, semplicemente assegnando loro la classe "with_bomb".
@@ -247,7 +182,6 @@ function hide_explosion(boom_gif)
 // Funzione che inverte la visibilità delle select nella navbar, di modo che esse siano presenti solo in fase off-game
 function toggle_select()
 {
-    document.getElementById("random_number_select").classList.toggle("d_none");
     document.getElementById("rows_number_select").classList.toggle("d_none");
     document.getElementById("bombs_number_select").classList.toggle("d_none");
 }
@@ -386,71 +320,16 @@ function set_classic_data()
     }
 }
 
-// Funzione centrale del "gioco-classico". 
-// A partire dalla cella cliccata, la funzione procede, in senso centrifugo, alla generazione di un array dinamico i cui elementi sono tutti gli indici di cella (a partire da quella cliccata) in cui non siano presenti mine, fino al raggiungimento dei bordi o di celle minate. Parallelamente alla generazione dell'array, la funzione provvede a rendere "cliccata" e quindi visibile ciascuna cella dell'array, realizzando un "effetto-espansione". A seconda dei casi, tale funzione puo' condurre fino a fine partita per vittoria.
-function classic_game(item_index)
-{
-    // Il parametro identifica la cella cliccata dal giocatore
-    classic_game_array.push(item_index);
-    // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile
-    do
-    {
-        // Il primo elemento dell'array dinamico è quello da passare al setaccio
-        let item = classic_game_array[0];
-        let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
-
-        // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
-        score++;
-        update_info();
-        current_item.classList.add("clicked_cell");
-        current_item.querySelector("h6").classList.remove("d_none");
-        cells_clicked++;
-        check_if_win();
-        // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
-        if (current_item.querySelector("h6").innerHTML == "0")
-        {
-            let neighbor_array = neighborhood(item);
-            // Si passano al setaccio tutte le celle limitrofe a quella principale e, nel caso, le si carica nell'array dinamico
-            for (let i = 0; i < neighbor_array.length; i++)
-            {
-                let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
-                if ((!neighbor_item.classList.contains("clicked_cell")) && (!classic_game_array.includes(neighbor_array[i])))
-                {
-                    classic_game_array.push(neighbor_array[i]);
-                }
-            }
-        }
-        // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
-        classic_game_array.splice(0,1);
-    }
-    while (classic_game_array.length > 0);
-}
-// ***************************************************
-
-
 function create_game_grid()
 {
+    classic_game_array = [];
     score = 0;
     exploded = false;
     won = false;
     cells_clicked = 0;
     cells_total = Math.pow(rows_nr, 2);
-    switch (document.getElementById("random_number_select").value)
-    {
-        case "random_nr_no":
-            release_numbers = release_ordered;
-            break;
-        case "random_nr_yes":
-            release_numbers = release_random;
-            create_boolean_array();
-            break;
-    }
     switch (document.getElementById("bombs_number_select").value)
     {
-        case "no_bombs":
-            bombs_str = bombs_0;
-            bombs_number = 0;
-            break;
         case "bombs_10":
             bombs_str = bombs_easy;
             bombs_number = Math.floor(cells_total * 0.1);
@@ -474,26 +353,47 @@ function create_game_grid()
     update_info();
     for (let i = 1; i <= cells_total; i++)
     {
-        let free_value = randomize_value(i);
-        let element = new_element("div", ["cell", "d_flex", "flex_center"], free_value);
+        let element = new_element("div", ["cell", "d_flex", "flex_center"], i);
         element.addEventListener("click", function()
         {
             if (!this.classList.contains("clicked_cell"))
             {
                 if (!this.classList.contains("with_bomb"))
                 {
-                    if (game_mode == classic_mode)
+                    // Il parametro identifica la cella cliccata dal giocatore
+                    classic_game_array.push(i);
+                    // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile
+                    do
                     {
-                        classic_game(i);
-                    }
-                    else
-                    {
-                        this.classList.add("clicked_cell");
+                        // Il primo elemento dell'array dinamico è quello da passare al setaccio
+                        let item = classic_game_array[0];
+                        let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
+        
+                        // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
                         score++;
                         update_info();
+                        current_item.classList.add("clicked_cell");
+                        current_item.querySelector("h6").classList.remove("d_none");
                         cells_clicked++;
                         check_if_win();
-                    }
+                        // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
+                        if (current_item.querySelector("h6").innerHTML == "0")
+                        {
+                            current_item.querySelector("h6").classList.add("d_none");
+                            let neighbor_array = neighborhood(item);
+                            // Si passano al setaccio tutte le celle limitrofe a quella principale e, nel caso, le si carica nell'array dinamico
+                            for (let i = 0; i < neighbor_array.length; i++)
+                            {
+                                let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
+                                if ((!neighbor_item.classList.contains("clicked_cell")) && (!classic_game_array.includes(neighbor_array[i])))
+                                {
+                                    classic_game_array.push(neighbor_array[i]);
+                                }
+                            }
+                        }
+                        // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
+                        classic_game_array.splice(0,1);
+                    } while (classic_game_array.length > 0);
                 }
                 else
                 {
@@ -520,17 +420,12 @@ function create_game_grid()
         });
         play_ground.append(element);
     }
-    if (bombs_number != 0) 
-    {
-        load_bombs();
-    }
-    if (game_mode == classic_mode)
-    {
-        set_classic_data();
-    }
+    load_bombs();
+    set_classic_data();
     document.querySelector("#main_core").append(play_ground);
     toggle_select();
 }
+
 
 msg_btn.addEventListener("click", function()
 {    
@@ -556,13 +451,8 @@ function show_message(message)
     msg_box.firstElementChild.innerHTML = `<h2>${message}</h2>`;
 }
 
-function go_to_game(is_classic)
+function go_to_game()
 {
-    game_mode = is_classic;
-    if (game_mode == classic_mode)
-    {
-        classic_game_array = [];
-    }
     if (!game_grid_exists)
     {
         // Significa che la griglia non c'e' e che non si sta giocando, quindi si puo' iniziare
@@ -595,6 +485,11 @@ function go_to_game(is_classic)
             // Significa che e' in corso un gioco e che non e' ancora terminato
         }
 }
+
+
+
+
+
 
 help_btn.addEventListener("mousedown",function()
 {
