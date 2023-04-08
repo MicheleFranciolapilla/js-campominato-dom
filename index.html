@@ -37,12 +37,17 @@
                     <option value="bombs_25"> Bombe: 25% </option>
                     <option value="bombs_50"> Bombe 50% </option>
                 </select>
-                <a href="#" class="slim_btn reset_decor" onclick="go_to_game()">Play</a>
+                <button id="btn_play" type="button" class="slim_btn active_btn reset_decor" onclick="go_to_game()">Play</button>
             </nav>
         </header>
         <main id="main_core" class="d_flex flex_main_start flex_cross_center">
             <aside id="side_menu_bar" class="d_none">
                 <ul id="side_menu_list" class="reset_list_style d_flex flex_column">
+                    <li class="menu_item">
+                        <a id="info_btn" class="reset_decor" href="#">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
+                    </li>
                     <li class="menu_item">
                         <a id="help_btn" class="reset_decor" href="#">
                             <i class="fa-solid fa-magnifying-glass"></i>

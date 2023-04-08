@@ -20,6 +20,15 @@
 
 .slim_btn
 {
+    color: darkgrey;
+    padding: 0.3rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid lightgray;
+    background-color: lightgray;
+}
+
+.slim_btn.active_btn
+{
     color: black;
     padding: 0.3rem 1.5rem;
     border-radius: 0.5rem;
@@ -37,7 +46,7 @@
     cursor: pointer;
 }
 
-.slim_btn:hover,
+.slim_btn.slim_btn.active_btn:hover,
 .ok_btn:hover
 {
     background-color: blue;
@@ -61,7 +70,8 @@
 {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: black;
+    opacity: 0.35;
     z-index: 1000;
 }
 

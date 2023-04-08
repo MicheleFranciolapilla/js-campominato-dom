@@ -66,6 +66,7 @@ let     won                 = false;
 // Variabile associata alla griglia di gioco
 let     play_ground;
 
+
 // Funzione che modifica, nel file di stile (.css), il valore della variabile indicante il numero di righe (e colonne) nel gioco
 function set_row_nr_css()
 {
@@ -91,7 +92,7 @@ function reset_game()
 {
     play_ground.remove();
     toggle_side_bars(side_bars_hide);
-    toggle_select();
+    toggle_select(false);
     game_grid_exists = false;
 }
 
@@ -168,7 +169,9 @@ function load_bombs()
 // Funzione evocata per mostrare l'immagine ".gif" dell'esplosione, caratteristica del fine gioco per sconfitta (click su cella minata)
 function show_explosion(boom_gif)
 {
+    console.log("esplosione in corso");
     play_ground.classList.add("p_rel");
+    btn_play_toggle(true);
     play_ground.append(boom_gif);
 }
 
@@ -176,14 +179,16 @@ function show_explosion(boom_gif)
 function hide_explosion(boom_gif)
 {
     boom_gif.remove();
+    btn_play_toggle(false);
     play_ground.classList.remove("p_rel");
+    console.log("esplosione finita");
 }
 
 // Funzione che inverte la visibilità delle select nella navbar, di modo che esse siano presenti solo in fase off-game
-function toggle_select()
+function toggle_select(bool)
 {
-    document.getElementById("rows_number_select").classList.toggle("d_none");
-    document.getElementById("bombs_number_select").classList.toggle("d_none");
+    document.getElementById("rows_number_select").disabled = bool;
+    document.getElementById("bombs_number_select").disabled = bool;
 }
 
 // Gruppo di funzioni esclusive del "gioco-classico"
@@ -327,6 +332,13 @@ function set_classic_data()
     }
 }
 
+function btn_play_toggle(bool)
+{
+    let button_play = document.querySelector("#btn_play");
+    button_play.classList.toggle("active_btn");
+    button_play.disabled = bool;
+}
+
 function remove_event_listener(clicked_item, index)
 {
     console.log("evento in rimozione");
@@ -380,6 +392,8 @@ function handle_click(clicked_item, index)
             {
                 // E' presente una bomba ed il gioco si conclude con la sconfitta
                 // Animazione esplosione
+                clicked_item.classList.add("clicked_cell");
+                clicked_item.firstChild.classList.toggle("d_none");
                 let boom_gif = new_element("img", ["p_abs", "p_center"], "");
                 boom_gif.setAttribute("src",explosion_gif);
                 boom_gif.setAttribute("alt","explosione");
@@ -397,7 +411,9 @@ function handle_click(clicked_item, index)
         else
         {
             // remove_event_listener(clicked_item, index);
-            console.log("Primo click su cella già cliccata. Evento rimosso!");
+            // this.removeEventListener("click", function() {handle_click(this, index)});
+            console.log("check for event remove");
+
         }
     }
 }
@@ -437,20 +453,21 @@ function create_game_grid()
     for (let i = 1; i <= cells_total; i++)
     {
         let element = new_element("div", ["cell", "d_flex", "flex_center"], i);
-        element.addEventListener("click", function () {handle_click(this, i)});
+        element.addEventListener("click", function() {handle_click(this, i)});
         element.addEventListener("contextmenu", (right_click) => 
         {
             right_click.preventDefault();
-            element.classList.toggle("maybe_bomb");
+            if (!element.classList.contains("clicked_cell"))
+            {
+                element.classList.toggle("maybe_bomb");
+            }
         });
         play_ground.append(element);
     }
     load_bombs();
     set_classic_data();
-    // const d = document.getElementById("game_grid");
-    // d.addEventListener("contextmenu", (e) => {e.preventDefault()});
     document.querySelector("#main_core").append(play_ground);
-    toggle_select();
+    toggle_select(true);
 }
 
 
