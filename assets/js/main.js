@@ -25,7 +25,7 @@ let     classic_game_array  = [];
 
 // Sezione relativa al numero di righe:
 // Costanti semantiche indicanti il numero di righe selezionato
-const   rows_10             = 10; 
+const   rows_10             = 10;       //valore di default
 const   rows_9              = 9;
 const   rows_7              = 7;
 // Variabile indicante il numero di righe selezionato
@@ -33,7 +33,7 @@ let     rows_nr             = rows_10;
 
 // Sezione relativa alla quantità di bombe presenti nel gioco:
 // Costanti semantiche, di tipo stringa, indicanti la percentuale di bombe presenti nel gioco
-const   bombs_easy          = "10%";
+const   bombs_easy          = "10%";    //valore di default
 const   bombs_medium        = "25%";
 const   bombs_hard          = "50%";
 // Variabili (stringa e numerica) indicanti il numero di bombe presenti nel gioco
@@ -304,7 +304,14 @@ function set_classic_cell(item_index)
             bombs_around++;
         }
     }
-    return bombs_around;
+    if (bombs_around != 0)
+    {
+        return bombs_around;
+    }
+    else
+    {
+        return "";
+    }
 }
 
 // Funzione che setta ciascuna cella non minata con un numero coincidente con il numero di celle minate limitrofe. Funzione usata solo nel "gioco-classico"
@@ -320,8 +327,84 @@ function set_classic_data()
     }
 }
 
+function remove_event_listener(clicked_item, index)
+{
+    console.log("evento in rimozione");
+    clicked_item.removeEventListener("click", function() {handle_click(clicked_item, index)});
+}
+
+
+function handle_click(clicked_item, index)
+{
+    if (!clicked_item.classList.contains("maybe_bomb"))
+    {
+        if (!clicked_item.classList.contains("clicked_cell"))
+        {
+            if (!clicked_item.classList.contains("with_bomb"))
+            {
+                // Il parametro identifica la cella cliccata dal giocatore
+                classic_game_array.push(index);
+                // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile
+                do
+                {
+                    // Il primo elemento dell'array dinamico è quello da passare al setaccio
+                    let item = classic_game_array[0];
+                    let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
+    
+                    // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
+                    score++;
+                    update_info();
+                    current_item.classList.add("clicked_cell");
+                    current_item.querySelector("h6").classList.remove("d_none");
+                    cells_clicked++;
+                    check_if_win();
+                    // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
+                    if (current_item.querySelector("h6").innerHTML == "")
+                    {
+                        let neighbor_array = neighborhood(item);
+                        // Si passano al setaccio tutte le celle limitrofe a quella principale e, nel caso, le si carica nell'array dinamico
+                        for (let i = 0; i < neighbor_array.length; i++)
+                        {
+                            let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
+                            if ((!neighbor_item.classList.contains("clicked_cell")) && (!classic_game_array.includes(neighbor_array[i])))
+                            {
+                                classic_game_array.push(neighbor_array[i]);
+                            }
+                        }
+                    }
+                    // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
+                    classic_game_array.splice(0,1);
+                } while (classic_game_array.length > 0);
+            }
+            else
+            {
+                // E' presente una bomba ed il gioco si conclude con la sconfitta
+                // Animazione esplosione
+                let boom_gif = new_element("img", ["p_abs", "p_center"], "");
+                boom_gif.setAttribute("src",explosion_gif);
+                boom_gif.setAttribute("alt","explosione");
+                boom_gif.setAttribute("width","250%");
+                boom_gif.setAttribute("height","100%");
+                show_explosion(boom_gif);
+                exploded = true;
+                setTimeout(function()
+                {
+                    hide_explosion(boom_gif);
+                    show_message("Hai cliccato su una cella minata e hai perso. <br> Ritenta, sarai più fortunato!");
+                }, 5000);
+            }
+        }
+        else
+        {
+            // remove_event_listener(clicked_item, index);
+            console.log("Primo click su cella già cliccata. Evento rimosso!");
+        }
+    }
+}
+
 function create_game_grid()
 {
+    // Inizializzazione variabili e griglia di gioco
     classic_game_array = [];
     score = 0;
     exploded = false;
@@ -354,74 +437,18 @@ function create_game_grid()
     for (let i = 1; i <= cells_total; i++)
     {
         let element = new_element("div", ["cell", "d_flex", "flex_center"], i);
-        element.addEventListener("click", function()
+        element.addEventListener("click", function () {handle_click(this, i)});
+        element.addEventListener("contextmenu", (right_click) => 
         {
-            if (!this.classList.contains("clicked_cell"))
-            {
-                if (!this.classList.contains("with_bomb"))
-                {
-                    // Il parametro identifica la cella cliccata dal giocatore
-                    classic_game_array.push(i);
-                    // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile
-                    do
-                    {
-                        // Il primo elemento dell'array dinamico è quello da passare al setaccio
-                        let item = classic_game_array[0];
-                        let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
-        
-                        // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
-                        score++;
-                        update_info();
-                        current_item.classList.add("clicked_cell");
-                        current_item.querySelector("h6").classList.remove("d_none");
-                        cells_clicked++;
-                        check_if_win();
-                        // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
-                        if (current_item.querySelector("h6").innerHTML == "0")
-                        {
-                            current_item.querySelector("h6").classList.add("d_none");
-                            let neighbor_array = neighborhood(item);
-                            // Si passano al setaccio tutte le celle limitrofe a quella principale e, nel caso, le si carica nell'array dinamico
-                            for (let i = 0; i < neighbor_array.length; i++)
-                            {
-                                let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
-                                if ((!neighbor_item.classList.contains("clicked_cell")) && (!classic_game_array.includes(neighbor_array[i])))
-                                {
-                                    classic_game_array.push(neighbor_array[i]);
-                                }
-                            }
-                        }
-                        // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
-                        classic_game_array.splice(0,1);
-                    } while (classic_game_array.length > 0);
-                }
-                else
-                {
-                    // E' presente una bomba ed il gioco si conclude con la sconfitta
-                    // Animazione esplosione
-                    let boom_gif = new_element("img", ["p_abs", "p_center"], "");
-                    boom_gif.setAttribute("src",explosion_gif);
-                    boom_gif.setAttribute("alt","explosione");
-                    boom_gif.setAttribute("width","250%");
-                    boom_gif.setAttribute("height","100%");
-                    show_explosion(boom_gif);
-                    exploded = true;
-                    setTimeout(function()
-                    {
-                        hide_explosion(boom_gif);
-                        show_message("Hai cliccato su una cella minata e hai perso. <br> Ritenta, sarai più fortunato!");
-                    }, 5000);
-                }
-            }
-            else
-            {
-                console.log("Hai selezionato una cella già aperta");
-            }
+            right_click.preventDefault();
+            element.classList.toggle("maybe_bomb");
         });
         play_ground.append(element);
     }
     load_bombs();
     set_classic_data();
+    // const d = document.getElementById("game_grid");
+    // d.addEventListener("contextmenu", (e) => {e.preventDefault()});
     document.querySelector("#main_core").append(play_ground);
     toggle_select();
 }
@@ -493,28 +520,24 @@ function go_to_game()
 
 help_btn.addEventListener("mousedown",function()
 {
-    if (game_grid_exists)
+    let cell_content = document.querySelectorAll("#game_grid .with_bomb");
+    for (let i = 0; i < bombs_number; i++)
     {
-        let cell_content = document.querySelectorAll("#game_grid h6");
-        mouse_hold_pressed = true;
-        for (let i = 0; i < cells_total; i++)
+        if (!cell_content[i].classList.contains("maybe_bomb"))
         {
-            cell_content[i].classList.remove("d_none");
+            cell_content[i].firstChild.classList.remove("d_none");
         }
     }
 });
 
-// Ricordarsi di sistemare la questione del mouse drag
-
 help_btn.addEventListener("mouseup",function()
 {
-    if (game_grid_exists)
+    let cell_content = document.querySelectorAll("#game_grid .with_bomb");
+    for (let i = 0; i < bombs_number; i++)
     {
-        let cell_content = document.querySelectorAll("#game_grid h6");
-        mouse_hold_pressed = false;
-        for (let i = 0; i < cells_total; i++)
+        if (!cell_content[i].classList.contains("maybe_bomb"))
         {
-            cell_content[i].classList.add("d_none");
+            cell_content[i].firstChild.classList.add("d_none");
         }
     }
 });

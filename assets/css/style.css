@@ -177,10 +177,15 @@ main > #game_grid > .cell.clicked_cell
     cursor: default;
     background-color: var(--clicked_cell_col);
     border: 1px solid black;
-    /* border-right : 5px solid var(--cell_border_col2);
-    border-bottom : 5px solid var(--cell_border_col2);
-    border-left : 5px solid var(--cell_border_col1);
-    border-top : 5px solid var(--cell_border_col1); */
+}
+
+main > #game_grid > .cell.maybe_bomb
+{
+    background-color: red;
+    background-image: url("../img/skull-crossbones-solid.svg");
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 footer
