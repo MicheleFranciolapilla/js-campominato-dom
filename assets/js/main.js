@@ -52,6 +52,7 @@ const   side_bars_hide      = false;
 // Sezione variabili e costanti specifiche
 // Variabile punteggio
 let     score               = 0; 
+let     penalty             = 0; 
 // Variabili indicanti il numero di celle: totali, valide (non minate) e cliccate
 let     cells_total         = 0; 
 let     cells_valid         = 0; 
@@ -110,28 +111,35 @@ function check_if_win()
     {
         // Termina partita
         won = true;
+        score = score - (penalty * 5);
         clock_done();
         game_on_going = false;
-        show_message(`Complimenti, hai vinto, totalizzando ${score} punti in ${time_num} secondi di gioco!`);
+        show_message(`Complimenti, hai vinto, totalizzando ${score} punti (${penalty} penalità), in ${time_num} secondi di gioco!`);
     }
 }
 
 // Funzione utilizzata per attivare/disattivare la menubar e la infobar relative al gioco in corso
 function toggle_side_bars(show_or_hide)
 {
-    let menu_bar = document.getElementById("side_menu_bar");
+    let menu_list = document.querySelectorAll("#side_menu_list > .menu_item");
     let info_bar = document.getElementById("side_info_bar");
     if (show_or_hide == side_bars_show)
     {
-        menu_bar.classList.remove("d_none");
-        menu_bar.classList.add("d_flex","flex_main_center");
+        for (let i = 1; i < menu_list.length; i++)
+        {
+            menu_list[i].classList.remove("d_none");
+            menu_list[i].classList.add("d_flex","flex_main_center");
+        }
         info_bar.classList.remove("d_none");
         info_bar.classList.add("d_flex","flex_main_center");
     }
     else
     {
-        menu_bar.classList.remove("d_flex","flex_main_center");
-        menu_bar.classList.add("d_none");
+        for (let i = 1; i < menu_list.length; i++)
+        {
+            menu_list[i].classList.remove("d_flex","flex_main_center");
+            menu_list[i].classList.add("d_none");
+        }
         info_bar.classList.remove("d_flex","flex_main_center");
         info_bar.classList.add("d_none");
     }
@@ -141,6 +149,7 @@ function toggle_side_bars(show_or_hide)
 function update_info()
 {
     document.getElementById("score_info").innerText = score;
+    document.getElementById("penalty_info").innerText = penalty;
     document.getElementById("cells_info").innerText = cells_total;
     document.getElementById("bombs_info").innerText = bombs_number;
 }
@@ -399,7 +408,7 @@ function handle_click(clicked_item, index)
                 let boom_gif = new_element("img", ["p_abs", "p_center"], "");
                 boom_gif.setAttribute("src",explosion_gif);
                 boom_gif.setAttribute("alt","explosione");
-                boom_gif.setAttribute("width","250%");
+                boom_gif.setAttribute("width","260%");
                 boom_gif.setAttribute("height","100%");
                 show_explosion(boom_gif);
                 setTimeout(function()
@@ -593,6 +602,7 @@ function go_to_game()
     cells_total = Math.pow(rows_nr, 2);
     cells_clicked = 0;
     score = 0;
+    penalty = 0;
     classic_game_array = [];
     won = false;
     switch (document.getElementById("bombs_number_select").value)
@@ -668,6 +678,8 @@ help_btn.addEventListener("mousedown",function()
             cell_content[i].firstChild.classList.remove("d_none");
         }
     }
+    penalty++;
+    update_info();
 });
 
 help_btn.addEventListener("mouseup",function()
