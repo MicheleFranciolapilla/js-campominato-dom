@@ -108,7 +108,7 @@ main
 
 #side_menu_bar
 {
-    flex-basis: calc((100% - var(--game_grid_side)) / 2);
+    flex-basis: calc((100% - var(--game_grid_side)) / 5);
     order: 0;
 }
 
@@ -140,7 +140,7 @@ main
     border-radius: 0.5rem;
 }
 
-#side_info_bar > #side_info_list > .info_item
+.info_item
 {
     height: 3rem;
     padding: 0 0.5rem;

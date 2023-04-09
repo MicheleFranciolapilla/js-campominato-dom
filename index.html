@@ -15,7 +15,7 @@
     <title>Campo minato</title>
 </head>
 <body>
-    <div id="message_box" class="d_none p_abs p_top_left">
+    <div id="message_box" class="d_none p_abs p_center">
         <h2>Messaggio all'utente</h2>
         <button id="msg_btn" class="ok_btn" type="button">OK</button>
     </div>
@@ -25,6 +25,9 @@
             <div id="logo_group" class="d_flex flex_main_btw flex_cross_center">
                 <img src="assets/img/mobile-logo.png" alt="Logo Boolean">
                 <h1 class="d_ib">Campo Minato</h1>
+            </div>
+            <div id="time_area">
+                <span class="info_item">Tempo di gioco: <span id="time_info"></span></span>
             </div>
             <nav class="d_flex flex_cross_center">
                 <select id="rows_number_select" name="row_number">
@@ -40,7 +43,7 @@
                 <button id="btn_play" type="button" class="slim_btn active_btn reset_decor" onclick="go_to_game()">Play</button>
             </nav>
         </header>
-        <main id="main_core" class="d_flex flex_main_start flex_cross_center">
+        <main id="main_core" class="d_flex flex_center">
             <aside id="side_menu_bar" class="d_none">
                 <ul id="side_menu_list" class="reset_list_style d_flex flex_column">
                     <li class="menu_item">
@@ -62,6 +65,7 @@
             </aside>
             <aside id="side_info_bar" class="d_none">
                 <ul id="side_info_list" class="reset_list_style d_flex flex_column">
+
                     <li class="info_item">
                         <span>Punti: <span id="score_info"></span></span>
                     </li>
