@@ -55,7 +55,9 @@
 
         <!-- Main, contenente la griglia, il pannello informativo e il menu di supporto -->
         <main id="main_core" class="p_rel d_flex flex_main_btw flex_cross_center">
+            <!-- L'id "extra" contiene tutti gli elementi visualizzati nel settore in basso a sinistra (finestra di informazioni, lista delle partite e registrazione della partita) -->
             <div id="extra_area" class="p_abs p_top_left d_none">
+                <!-- Contenitore utilizzato per la registrazione della partita -->
                 <div id="save_score" class="d_none">
                     <h3 class="center_text">Salva la tua partita</h3>
                     <ul>
@@ -72,7 +74,6 @@
                                 <span> Tempo impiegato:</span>
                             </div>
                             <h4 class="item_value"></h4>
-
                         </li>
                         <li class="d_flex flex_main_btw"> 
                             <div>
@@ -80,7 +81,6 @@
                                 <span> Penalità comminate:</span>
                             </div>
                             <h4 class="item_value"></h4>
-
                         </li>
                         <li class="d_flex flex_main_btw"> 
                             <div>
@@ -88,7 +88,6 @@
                                 <span> Difficoltà di gioco:</span>
                             </div>   
                             <h4 class="item_value"></h4>
-
                         </li>
                         <li class="d_flex flex_main_btw">
                             <div>
@@ -96,7 +95,6 @@
                                 <span> Griglia di gioco:</span>
                             </div>  
                             <h4 class="item_value"></h4>
-
                         </li>
                     </ul>
                     <hr>
@@ -106,12 +104,15 @@
                         <button id="user_id_btn" type="submit" class="slim_btn active_btn" style="margin: 0.5rem auto;">Conferma</button>
                     </form>
                 </div>
+                <!-- Contenitore utilizzato per la visualizzazione di tutte le partite vinte -->
                 <div id="users_scores" class="d_none">
+                    <!-- Pulsante di uscita dalla finestra -->
                     <div class="d_flex flex_main_end">
                         <a id="exit_users_scores" href="#" class="reset_decor" type="button" onclick="close_window(1)"><i class="fa-regular fa-circle-xmark"></i></a>
                     </div>
                     <h3 class="center_text">Vincitori nella sessione corrente</h3>
                     <div id="users_scores_table" class="d_flex flex_column">
+                        <!-- Header della tabella -->
                         <ul id="table_header" class="d_flex reset_list_style">
                             <li class="center_text">Utente</li>
                             <li class="center_text"><i class="fa-regular fa-star"></i></li>
@@ -120,10 +121,13 @@
                             <li class="center_text"><i class="fa-solid fa-bomb"></i></li>
                             <li class="center_text"><i class="fa-solid fa-table-cells"></i></li>
                         </ul>
+                        <!-- Contenitore-lista vuoto, riempito, dinamicamente da Javascript, con tutte le partite vinte -->
                         <ul id="table_body" class="reset_list_style"></ul>
                     </div>
                 </div>
+                <!-- Finestra di informazioni sul gioco -->
                 <div id="info_space" class="d_none">
+                    <!-- Pulsante di uscita dalla finestra -->
                     <div class="d_flex flex_main_end">
                         <a id="exit_info_space" href="#" class="reset_decor" type="button" onclick="close_window(2)"><i class="fa-regular fa-circle-xmark"></i></a>
                     </div>   
@@ -145,8 +149,10 @@
                     </p>               
                 </div>
             </div>
+            <!-- Sezione con il menu di supporto -->
             <aside id="side_menu_bar" class="flex_self_start m_top_10 d_flex">
                 <ul id="side_menu_list" class="reset_list_style d_flex">
+                    <!-- Pulsante per la finestra di informazioni -->
                     <li id="info_btn" class="menu_item p_rel">
                         <a class="reset_decor" href="#">
                             <i class="fa-solid fa-info"></i>
@@ -155,6 +161,7 @@
                             Visualizza tutte le informazioni e le regole relative al gioco.
                         </p>
                     </li>
+                    <!-- Pulsante per la funzione dell'aiuto in partita -->
                     <li id="help_btn" class="d_none menu_item toggleable p_rel">
                         <a class="reset_decor" href="#">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -163,6 +170,7 @@
                             Consente di visualizzare l'ubicazione delle bombe ma comporta una penalità (dipendente dal livello di difficoltà selezionato) sul punteggio.
                         </p>
                     </li>
+                    <!-- Pulsante usato per interrompere la partita in corso -->
                     <li id="stop_btn" class="d_none menu_item toggleable p_rel">
                         <a class="reset_decor" href="#">
                             <i class="fa-solid fa-xmark"></i>
@@ -171,6 +179,7 @@
                             Termina immediatamente la partita in corso.
                         </p>
                     </li>
+                    <!-- Pulsante con funzione di visualizzazione della lista delle partite vinte -->
                     <li id="best_btn" class="menu_item p_rel">
                         <a class="reset_decor" href="#">
                             <i class="fa-solid fa-star"></i>
@@ -180,8 +189,8 @@
                         </p>
                     </li>
                 </ul>
-
             </aside>
+            <!-- Sezione con il pannello informativo -->
             <aside id="side_info_bar" class="d_none">
                 <ul id="side_info_list" class="reset_list_style d_flex flex_column">
                     <li class="info_item">
@@ -207,7 +216,6 @@
             <span>Developed by <span style="color: red; font-weight: 600;">Aki A.c.p.</span></span>
         </footer>
     </div>
-
 
     <!-- File di script dedicato -->
     <script src="assets/js/main.js"></script>
