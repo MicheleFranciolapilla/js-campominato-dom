@@ -36,8 +36,12 @@ let     rows_nr             = rows_10;
 const   bombs_easy          = "10%";    //valore di default
 const   bombs_medium        = "25%";
 const   bombs_hard          = "50%";
+const   b_easy              = "Bassa";    //valore di default
+const   b_medium            = "Media";
+const   b_hard              = "Alta";
 // Variabili (stringa e numerica) indicanti il numero di bombe presenti nel gioco
 let     bombs_str           = bombs_easy;   
+let     b_str               = b_easy; 
 let     bombs_number        = 0;  
 // Immagine ".gif" utilizzata alla conclusione del gioco dovuta a click su cella minata
 const   explosion_gif       = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosion.gif"; 
@@ -63,6 +67,7 @@ let     game_grid_exists    = false;
 let     game_on_going       = false;
 // Variabili booleane usate in fase di conclusione gioco, rispettivamente per sconfitta o per vittoria
 let     won                 = false; 
+let     maybe_tag           = 0; 
 // Variabile associata alla griglia di gioco
 let     play_ground;
 let     time_str            = "";
@@ -73,6 +78,13 @@ let     seconds             = 0;
 let     timer; 
 let     starting_game       = true; 
 let     time_info_element   = document.getElementById("time_info");
+
+let     array_user          = [];
+let     array_score         = [];
+let     array_time          = [];
+let     array_penalty       = [];
+let     array_bombs         = [];
+let     array_grid          = [];
 
 // Funzione che modifica, nel file di stile (.css), il valore della variabile indicante il numero di righe (e colonne) nel gioco
 function set_row_nr_css()
@@ -104,6 +116,19 @@ function reset_game()
     nav_menu_toggle(false);
 }
 
+function penalties()
+{
+    switch (bombs_str)
+    {
+        case bombs_easy:
+            return (penalty * 15);
+        case bombs_medium:
+            return (penalty * 8);
+        default:
+            return (penalty * 3);
+    }
+}
+
 // Funzione richiamata per verificare se l'ultima cella cliccata conduca o meno alla vittoria. In caso affermativo si procede con il relativo messaggio
 function check_if_win()
 {
@@ -111,9 +136,9 @@ function check_if_win()
     {
         // Termina partita
         won = true;
-        score = score - (penalty * 5);
         clock_done();
         game_on_going = false;
+        score = score - penalties();
         show_message(`Complimenti, hai vinto, totalizzando ${score} punti (${penalty} penalità), in ${time_num} secondi di gioco!`);
     }
 }
@@ -121,11 +146,11 @@ function check_if_win()
 // Funzione utilizzata per attivare/disattivare la menubar e la infobar relative al gioco in corso
 function toggle_side_bars(show_or_hide)
 {
-    let menu_list = document.querySelectorAll("#side_menu_list > .menu_item");
+    let menu_list = document.querySelectorAll("#side_menu_list > .menu_item.toggleable");
     let info_bar = document.getElementById("side_info_bar");
     if (show_or_hide == side_bars_show)
     {
-        for (let i = 1; i < menu_list.length; i++)
+        for (let i = 0; i < menu_list.length; i++)
         {
             menu_list[i].classList.remove("d_none");
             menu_list[i].classList.add("d_flex","flex_main_center");
@@ -135,7 +160,7 @@ function toggle_side_bars(show_or_hide)
     }
     else
     {
-        for (let i = 1; i < menu_list.length; i++)
+        for (let i = 0; i < menu_list.length; i++)
         {
             menu_list[i].classList.remove("d_flex","flex_main_center");
             menu_list[i].classList.add("d_none");
@@ -152,6 +177,7 @@ function update_info()
     document.getElementById("penalty_info").innerText = penalty;
     document.getElementById("cells_info").innerText = cells_total;
     document.getElementById("bombs_info").innerText = bombs_number;
+    document.getElementById("tags_info").innerText = maybe_tag;
 }
 
 // Generatore di numeri interi randomici
@@ -505,6 +531,15 @@ function create_game_grid()
             if (!element.classList.contains("clicked_cell"))
             {
                 element.classList.toggle("maybe_bomb");
+                if (element.classList.contains("maybe_bomb"))
+                {
+                    maybe_tag++;
+                }
+                else
+                {
+                    maybe_tag--;
+                }
+                update_info();
             }
         });
         play_ground.append(element);
@@ -514,6 +549,66 @@ function create_game_grid()
     document.querySelector("#main_core").append(play_ground);
 }
 
+function prepare_extra()
+{
+    let page_overlay = document.getElementById("overlay");
+    page_overlay.classList.toggle("d_none");
+    let extra = document.getElementById("extra_area");
+    extra.classList.toggle("d_none");
+}
+
+function hide_extra()
+{
+    let extra = document.getElementById("extra_area");
+    extra.classList.toggle("d_none");
+    let page_overlay = document.getElementById("overlay");
+    page_overlay.classList.toggle("d_none");  
+}
+
+function save_score()
+{
+    prepare_extra();
+    let save = document.getElementById("save_score");
+    save.classList.toggle("d_none");
+    results = document.querySelectorAll("#save_score h4.item_value");
+    results[0].innerText = `${score}`;
+    results[1].innerText = `${time_num}"`;
+    results[2].innerText = `${penalty}`;
+    results[3].innerText = `${b_str}`;
+    results[4].innerText = `${rows_nr}X${rows_nr}`;
+}
+
+function sort_arrays()
+{
+    for (let i = 0; i < array_user.length - 1; i++)
+    {
+        for (j = i + 1; j < array_bombs.user.length; j++)
+        {
+        }
+    }
+}
+
+user_id_form.addEventListener("submit", (id_form) => 
+{
+    id_form.preventDefault();
+    let value_ = document.getElementById('user_id').value;
+    array_user.unshift(value_);
+    array_score.unshift(score);
+    array_time.unshift(time_num);
+    array_penalty.unshift(penalty);
+    array_bombs.unshift(b_str);
+    array_grid.unshift(rows_nr);
+    let save = document.getElementById("save_score");
+    save.classList.toggle("d_none");
+    hide_extra();
+    console.log(array_user);
+    console.log(array_score);
+    console.log(array_time);
+    console.log(array_penalty);
+    console.log(array_bombs);
+    console.log(array_grid);
+    // sort_arrays();
+});
 
 msg_btn.addEventListener("click", function()
 {    
@@ -544,6 +639,7 @@ msg_btn.addEventListener("click", function()
         if (won)
         {
             console.log("Hai vinto");
+            save_score();
         }
         else
         {
@@ -552,11 +648,7 @@ msg_btn.addEventListener("click", function()
         reset_game();
     }
 
-    // if ((exploded) || (won))
-    // {
-    //     game_on_going = false;
-    //     reset_game();
-    // }
+
 });
 
 function show_message(message)
@@ -604,19 +696,24 @@ function go_to_game()
     score = 0;
     penalty = 0;
     classic_game_array = [];
+    document.getElementById('user_id').innerText = 0;
     won = false;
+    maybe_tag = 0;
     switch (document.getElementById("bombs_number_select").value)
     {
         case "bombs_10":
             bombs_str = bombs_easy;
+            b_str = b_easy;
             bombs_number = Math.floor(cells_total * 0.1);
             break;
         case "bombs_25":
             bombs_str = bombs_medium;
+            b_str = b_medium
             bombs_number = Math.floor(cells_total * 0.25);
             break;
         case "bombs_50":
             bombs_str = bombs_hard;
+            b_str = b_hard;
             bombs_number = Math.floor(cells_total * 0.5);
             break;
     }
@@ -628,45 +725,59 @@ function go_to_game()
     show_message(`Ok, puoi iniziare una nuova partita con ${rows_nr} righe e ${rows_nr} colonne`);
 }
 
-// function go_to_game()
-// {
-//     if (!game_grid_exists)
-//     {
-//         // Significa che la griglia non c'e' e che non si sta giocando, quindi si puo' iniziare
-//         switch (document.getElementById("rows_number_select").value)
-//         {
-//             case "r_10":
-//                 rows_nr = rows_10;
-//                 break;
-//             case "r_9":
-//                 rows_nr = rows_9;
-//                 break;
-//             case "r_7":
-//                 rows_nr = rows_7;
-//                 break;
-//         }
-//         show_message(`Ok, puoi iniziare una nuova partita con ${rows_nr} righe e ${rows_nr} colonne`);
-//         set_row_nr_css();
-//         create_game_grid();
-//     }
-//     else 
-//         if (!game_on_going)
-//         {
-//             show_message("Ok, ricominciamo");
-//             reset_game();
-//             go_to_game();
-//         }
-//         else
-//         {
-//             show_message(`La partita è ancora in corso. <br> Premi sull'icona (${stop_fa_icon}) per terminarla.`);
-//             // Significa che e' in corso un gioco e che non e' ancora terminato
-//         }
-// }
+function show_users()
+{
+    let table_body = document.getElementById("table_body");
+    let i = 0;
+    while (i < array_user.length)
+    {
+        let current_user = new_element("li", [], 0);
+        current_user.innerHTML = 
+        `<ul class="d_flex data_list reset_list_style" style="padding: 3px 0; font-size: 0.7rem;">
+        <li>${array_user[i]}</li>
+        <li class="center_text">${array_score[i]}</li>
+        <li class="center_text">${array_time[i]}"</li>
+        <li class="center_text">${array_penalty[i]}</li>
+        <li class="center_text">${array_bombs[i]}</li>
+        <li class="center_text">${array_grid[i]}X${array_grid[i]}</li>
+        </ul>`;
+        console.log(current_user);
+        table_body.append(current_user);
+        i++;
+    }
+}
 
+function close_window(nr)
+{
+    switch (nr)
+    {
+        case 1:
+            let table_body = document.getElementById("table_body");
+            table_body.innerHTML = "";
+            let scores = document.getElementById("users_scores");
+            scores.classList.toggle("d_none");
+            break;
+        case 2:
+            let info = document.getElementById("info_space");
+            info.classList.toggle("d_none");
+    }
+    hide_extra();
+}
 
+best_btn.addEventListener("click", function()
+{
+    prepare_extra();
+    let scores = document.getElementById("users_scores");
+    scores.classList.toggle("d_none");
+    show_users();
+});
 
-
-
+info_btn.addEventListener("click", function()
+{
+    prepare_extra();
+    let info = document.getElementById("info_space");
+    info.classList.toggle("d_none");
+});
 
 help_btn.addEventListener("mousedown",function()
 {
@@ -698,8 +809,6 @@ stop_btn.addEventListener("click", function()
 {
   clock_done();
   show_message("La partita è stata chiusa.");  
-//   game_on_going = false;
-//   reset_game();
 });
 
 clock_zero();

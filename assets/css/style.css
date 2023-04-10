@@ -131,6 +131,7 @@ main
 
 #side_menu_bar > #side_menu_list > .menu_item
 {
+    cursor: pointer;
     width: 3rem;
     aspect-ratio: 1;
     background-color: var(--cell_color);
@@ -171,7 +172,7 @@ main
 .quick_info
 {
     left: 0;
-    min-width: 220px;
+    min-width: 250px;
     background-color: darkgray;
     text-align: left;
     font-size: 1rem;
@@ -180,6 +181,145 @@ main
     padding: 5px;
     border: 2px solid blue;
     margin-top: 55px;
+}
+
+#extra_area
+{
+    width: calc(((100% - var(--game_grid_side)) / 2) - 4vw);
+    background-color: white;
+    color:black;
+    padding: 1rem;
+    border: 3px solid black;
+    border-radius: 0.5rem;
+    margin:2vh 2vw;
+    top: 25vh;
+    z-index: 1001;
+}
+
+#save_score ul > li
+{
+    padding: 1rem;
+}
+
+#save_score hr
+{
+    margin: 1rem;
+}
+
+#save_score form
+{
+    padding: 1rem;
+}
+
+#exit_users_scores,
+#exit_info_space
+{
+    color: darkgrey;
+    font-size: 2rem;
+}
+
+#exit_users_scores:hover,
+#exit_info_space:hover
+{
+    color: blue;
+}
+
+
+#users_scores_table #table_header
+{
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid black;
+}
+
+#users_scores_table #table_body
+{
+    border: 2px solid black;
+    overflow-y: auto;
+    max-height: 35vh;
+    padding: 0 5px;
+}
+
+#users_scores_table #table_header > li
+{
+    color: blue;
+    border: 1px solid black;
+    padding: 5px 1px;
+    flex-basis: 10%;
+}
+
+#users_scores_table #table_body .data_list > li
+{
+    border-bottom: 1px dash darkgrey;
+}
+
+/* #users_scores_table #table_body .data_list:last-child
+{
+    border-bottom: none;
+} */
+
+
+#users_scores_table #table_body .data_list > li
+{
+    flex-basis: 10%;
+    margin-right: auto;
+}
+
+#users_scores_table #table_header > li:first-child,
+#users_scores_table #table_body .data_list > li:first-child
+{
+    flex-basis: 36%;
+    padding-left: 2px;
+}
+
+/* #users_scores_table #table_header > li:nth-child(2)
+{
+    flex-basis: 10%;
+} */
+
+/* #users_scores_table #table_header > li:nth-child(3),
+#users_scores_table #table_body > li > ul > li:nth-child(3)
+
+{
+    flex-basis: 15%;
+} */
+
+/* #users_scores_table #table_header > li:nth-child(4)
+{
+    flex-basis: 10%;
+} */
+
+#users_scores_table #table_header > li:nth-child(5),
+#users_scores_table #table_body > li > ul > li:nth-child(5)
+
+{
+    flex-basis: 16%;
+}
+
+#users_scores_table #table_header > li:nth-child(6), 
+#users_scores_table #table_body > li > ul > li:nth-child(6)
+
+{
+    /* flex-basis: 16%; */
+    flex-grow: 2;
+    flex-shrink: 2;
+}
+
+#info_space p.info_paragraph
+{
+    margin: 1.5rem auto 1rem auto;
+    padding: 0.5rem;
+    background-color: lightgrey;
+    border-radius: 0.5rem;
+    height: 40vh;
+    overflow-y: auto;
+}
+
+#info_space p.info_paragraph mark
+{
+    background-color: rgb(247, 239, 239);
+    font-weight: 800;
+    color: blue;
 }
 
 main > #game_grid

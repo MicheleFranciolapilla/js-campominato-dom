@@ -15,26 +15,35 @@
     <title>Campo minato</title>
 </head>
 <body>
+    <!-- Div utilizzato per inviare messaggi all'utente. Posizione e testo cambiano in funzione della situazione specifica -->
     <div id="message_box" class="d_none p_abs p_center">
         <h2>Messaggio all'utente</h2>
         <button id="msg_btn" class="ok_btn" type="button">OK</button>
     </div>
+
+    <!-- L'id "web_app" rappresenta il contenitore generale dell'intera pagina -->
     <div id="web_app" class="p_rel web_app_size">
+        <!-- Il div di overlay viene utilizzato nelle fasi di invio messaggi all'utente -->
         <div id="overlay" class="d_none p_abs"></div>
+        <!-- Nello header sono presenti gli elementi: logo, orologio, menu -->
         <header class="d_flex flex_main_btw">
             <div id="logo_group" class="d_flex flex_main_btw flex_cross_center">
                 <img src="assets/img/mobile-logo.png" alt="Logo Boolean">
                 <h1 class="d_ib">Campo Minato</h1>
             </div>
+            <!-- Area dedicata all'orologio (timer di gioco) -->
             <div id="time_area">
                 <span class="info_item">Tempo di gioco: <span id="time_info"></span></span>
             </div>
+            <!-- Menu principale contenente selezioni di gioco e pulsante "play" -->
             <nav class="d_flex flex_cross_center">
+                <!-- Selezione del numero di celle della griglia di gioco -->
                 <select id="rows_number_select" name="row_number">
                     <option value="r_10" selected> Griglia 10X10 </option>
                     <option value="r_9"> Griglia 9X9 </option>
                     <option value="r_7"> Griglia 7X7 </option>
                 </select>
+                <!-- Selezione del livello di difficoltà -->
                 <select id="bombs_number_select" name="bombs_number">
                     <option value="bombs_10" selected> Bombe: 10% </option>
                     <option value="bombs_25"> Bombe: 25% </option>
@@ -43,35 +52,126 @@
                 <button id="btn_play" type="button" class="slim_btn active_btn reset_decor" onclick="go_to_game()">Play</button>
             </nav>
         </header>
-        <main id="main_core" class="d_flex flex_main_btw flex_cross_center">
+        
+        <main id="main_core" class="p_rel d_flex flex_main_btw flex_cross_center">
+            <div id="extra_area" class="p_abs p_top_left d_none">
+                <div id="save_score" class="d_none">
+                    <h3 class="center_text">Salva la tua partita</h3>
+                    <ul>
+                        <li class="d_flex flex_main_btw">
+                            <div>
+                                <i class="fa-regular fa-star"></i>
+                                <span> Punti risultanti:</span>
+                            </div>
+                            <h4 class="item_value"></h4>
+                        </li>
+                        <li class="d_flex flex_main_btw"> 
+                            <div>
+                                <i class="fa-regular fa-clock"></i>
+                                <span> Tempo impiegato:</span>
+                            </div>
+                            <h4 class="item_value"></h4>
+
+                        </li>
+                        <li class="d_flex flex_main_btw"> 
+                            <div>
+                                <i class="fa-solid fa-ban"></i>
+                                <span> Penalità comminate:</span>
+                            </div>
+                            <h4 class="item_value"></h4>
+
+                        </li>
+                        <li class="d_flex flex_main_btw"> 
+                            <div>
+                                <i class="fa-solid fa-bomb"></i>
+                                <span> Difficoltà di gioco:</span>
+                            </div>   
+                            <h4 class="item_value"></h4>
+
+                        </li>
+                        <li class="d_flex flex_main_btw">
+                            <div>
+                                <i class="fa-solid fa-table-cells"></i>
+                                <span> Griglia di gioco:</span>
+                            </div>  
+                            <h4 class="item_value"></h4>
+
+                        </li>
+                    </ul>
+                    <hr>
+                    <form id="user_id_form">
+                        <span>Digita il tuo nickname...</span>
+                        <input type="text" name="user_name" id="user_id" minlength="1" maxlength="10" value="" required>
+                        <button id="user_id_btn" type="submit" class="slim_btn active_btn" style="margin: 0.5rem auto;">Conferma</button>
+                    </form>
+                </div>
+                <div id="users_scores" class="d_none">
+                    <div class="d_flex flex_main_end">
+                        <a id="exit_users_scores" href="#" class="reset_decor" type="button" onclick="close_window(1)"><i class="fa-regular fa-circle-xmark"></i></a>
+                    </div>
+                    <h3 class="center_text">Vincitori nella sessione corrente</h3>
+                    <div id="users_scores_table" class="d_flex flex_column">
+                        <ul id="table_header" class="d_flex reset_list_style">
+                            <li class="center_text">Utente</li>
+                            <li class="center_text"><i class="fa-regular fa-star"></i></li>
+                            <li class="center_text"><i class="fa-regular fa-clock"></i></li>
+                            <li class="center_text"><i class="fa-solid fa-ban"></i></li>
+                            <li class="center_text"><i class="fa-solid fa-bomb"></i></li>
+                            <li class="center_text"><i class="fa-solid fa-table-cells"></i></li>
+                        </ul>
+                        <ul id="table_body" class="reset_list_style"></ul>
+                    </div>
+                </div>
+                <div id="info_space" class="d_none">
+                    <div class="d_flex flex_main_end">
+                        <a id="exit_info_space" href="#" class="reset_decor" type="button" onclick="close_window(2)"><i class="fa-regular fa-circle-xmark"></i></a>
+                    </div>   
+                    <h3 class="center_text">Informazioni sul gioco</h3>  
+                    <p class="info_paragraph">
+                        <mark>Menù principale:</mark>  <br>
+                        è possibile selezionare la griglia di gioco (49, 81 o 100 celle) e il livello di difficoltà (basso: 10% di celle minate; medio: 25% di celle minate; alto: 50% di celle minate). <br> <br>
+                        <mark>Gioco:</mark>  <br>
+                        cliccando col tasto sinistro del mouse si scopre il contenuto della cella; se non c'è una mina al suo interno si guadagna un punto, altrimenti si perde la partita. Il numero visualizzato al click sulla cella (se non minata) indica il numero di celle limitrofe minate. Nel caso si avesse un dubbio circa la presenza di mina nella cella che si vuole cliccare, sarebbe preferibile marcarla (cliccando col tasto destro del mouse). Il gioco termina con la sconfitta (cliccando su una cella minata),con la vittoria, quando sono state cliccate e scoperte tutte le celle non minate, oppure abbandonando la partita. 
+                        In caso di vittoria, viene richiesta la registrazione della giocata.<br> <br>
+                        <mark>Pannello delle informazioni:</mark>  <br>
+                        alla destra della griglia di gioco è presente un pannello che raccoglie tutte le informazioni circa il gioco in corso. <br> <br>
+                        <mark>Menù di supporto:</mark>  <br>
+                        il menù di supporto fornisce una serie di funzioni utili.... <br>
+                        La presente finestra informativa. <br>
+                        La funzione di aiuto in partita che consente di visualizzare il contenuto delle celle (ad ogni aiuto in partita corrisponde una penalità sul punteggio finale, tanto più onerosa quanto più basso il livello di difficoltà). <br>
+                        La funzione di abbandono della partita corrente. <br>
+                        La visualizzazione di tutte le partite vincenti della sessione. <br>
+                    </p>               
+                </div>
+            </div>
             <aside id="side_menu_bar" class="flex_self_start m_top_10 d_flex">
                 <ul id="side_menu_list" class="reset_list_style d_flex">
-                    <li class="menu_item p_rel">
-                        <a id="info_btn" class="reset_decor" href="#">
+                    <li id="info_btn" class="menu_item p_rel">
+                        <a class="reset_decor" href="#">
                             <i class="fa-solid fa-info"></i>
                         </a>
                         <p class="quick_info p_abs d_none">
                             Visualizza tutte le informazioni e le regole relative al gioco.
                         </p>
                     </li>
-                    <li class="d_none menu_item p_rel">
-                        <a id="help_btn" class="reset_decor" href="#">
+                    <li id="help_btn" class="d_none menu_item toggleable p_rel">
+                        <a class="reset_decor" href="#">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </a>
                         <p class="quick_info p_abs d_none">
-                            Consente di visualizzare l'ubicazione delle bombe ma comporta una penalità (5 punti) sul punteggio.
+                            Consente di visualizzare l'ubicazione delle bombe ma comporta una penalità (dipendente dal livello di difficoltà selezionato) sul punteggio.
                         </p>
                     </li>
-                    <li class="d_none menu_item p_rel">
-                        <a id="stop_btn" class="reset_decor" href="#">
+                    <li id="stop_btn" class="d_none menu_item toggleable p_rel">
+                        <a class="reset_decor" href="#">
                             <i class="fa-solid fa-xmark"></i>
                         </a>
                         <p class="quick_info p_abs d_none">
                             Termina immediatamente la partita in corso.
                         </p>
                     </li>
-                    <li class="menu_item p_rel">
-                        <a id="best_btn" class="reset_decor" href="#">
+                    <li id="best_btn" class="menu_item p_rel">
+                        <a class="reset_decor" href="#">
                             <i class="fa-solid fa-star"></i>
                         </a>
                         <p class="quick_info p_abs d_none">
@@ -79,6 +179,7 @@
                         </p>
                     </li>
                 </ul>
+
             </aside>
             <aside id="side_info_bar" class="d_none">
                 <ul id="side_info_list" class="reset_list_style d_flex flex_column">
@@ -94,13 +195,18 @@
                     <li class="info_item">
                         <span>Bombe: <span id="bombs_info"></span></span>
                     </li>
+                    <li class="info_item">
+                        <span>Marcature: <span id="tags_info"></span></span>
+                    </li>
                 </ul>
             </aside>
         </main>
+
         <footer class="p_fixed_footer d_flex flex_cross_center">
             <span>Developed by <span style="color: red; font-weight: 600;">Aki A.c.p.</span></span>
         </footer>
     </div>
+
 
     <!-- File di script dedicato -->
     <script src="assets/js/main.js"></script>
