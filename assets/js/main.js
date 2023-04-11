@@ -398,12 +398,14 @@ function set_bombs_around()
 // Fine del gruppo delle funzioni deputate all'espansione delle celle libere
 // ***************************************************
 
-// Funzione impiegata per disabilitare/riabilitare il pulsante "play", a seconda del parametro (booleano)
-function btn_play_toggle(bool)
+// Funzione impiegata per disabilitare/abilitare gli elementi della navbar (select + pulsante play)
+function nav_menu_toggle(bool)
 {
     let button_play = document.querySelector("#btn_play");
-    button_play.classList.toggle("active_btn");
+    document.getElementById("rows_number_select").disabled = bool;
+    document.getElementById("bombs_number_select").disabled = bool;
     button_play.disabled = bool;
+    button_play.classList.toggle("active_btn");
 }
 
 // Funzione principale del gioco
@@ -553,49 +555,74 @@ function clock_init()
 // Fine del gruppo di funzioni dedicate al timer di gioco
 // ***************************************************
 
+// Funzione invocata per la creazione della griglia di gioco e lo smistamento delle funzioni a seconda del tipo di evento "click"
 function create_game_grid()
 {
+    // Manipolazione del DOM mediante creazione della griglia di gioco e delle relative celle e conseguente collegamento del tutto al main dell'html
     play_ground = document.createElement("div");
     play_ground.setAttribute("id", "game_grid");
     play_ground.classList.add("d_flex", "flex_wrap", "flex_main_btw");
+    // Visualizzazione degli elementi laterali: pannello riepilogativo (infobar) ed elementi del menu di supporto (menubar)
     toggle_side_bars(side_bars_show);
     update_info();
+    // Ciclo di creazione delle celle e di smistamento delle funzioni al click (sinistro o destro)
     for (let i = 1; i <= cells_total; i++)
     {
+        // Creazione della cella
         let element = new_element("div", ["cell", "d_flex", "flex_center"], i);
+        // Smistamento delle funzioni al click sinistro
         element.addEventListener("click", function() {handle_click(this, i)});
+        // Smistamento delle funzioni al click destro
         element.addEventListener("contextmenu", (right_click) => 
         {
+            // Inizio della funzione di gestione del click destro
             right_click.preventDefault();
+            // Step 1: si verifica se la cella sia già stata cliccata (click sinitro).....in caso affermativo non si esegue nessuna funzione
             if (!element.classList.contains("clicked_cell"))
             {
+                // Step 2: in assenza di un precedente click sinistro è possibile dar seguito al click destro per la marcatura/demarcatura della cella
+                // Switch della marcatura
                 element.classList.toggle("maybe_bomb");
+                // Step 3: se la cella non era precedentemente marcata, ora lo è e si incrementa il relativo contatore delle marcature......
                 if (element.classList.contains("maybe_bomb"))
                 {
                     maybe_tag++;
                 }
+                // Step 4: ....altrimenti la cella era già marcata ed ora non lo è più, dunque si decrementa il contatore delle marcature
                 else
                 {
                     maybe_tag--;
                 }
+                // Aggiornamento delle informazioni (in particolare del numero di marcature)
                 update_info();
             }
+            // Fine della funzione di gestione del click destro
         });
+        // Ancora all'interno del ciclo di creazione delle celle. Si collega la cella alla griglia di gioco
         play_ground.append(element);
     }
+    // Una volta create tutte le celle e collegate alla griglia......
+    // ...si invoca la funzione di inserimento bombe e ....
     load_bombs();
+    // ...si invoca la funzione per determinare, per ogni cella non minata, il numero di celle minate nei dintorni
     set_bombs_around();
+    // Infine si collega la griglia al main di html
     document.querySelector("#main_core").append(play_ground);
 }
 
+// Gruppo di funzioni dedicate alle attività svolte dentro l'area "extra"
+// ***************************************************
+// Funzione che attiva l'area "extra" in cui verranno visualizzati, a seconda del tasto cliccato nel menubar, gli elementi: informazioni, lista delle partite vinte nella sessione corrente, salvataggio dei dati della partita appena conclusa e vinta
 function prepare_extra()
 {
+    // Attivazione dell'overlay che inibisce qualsiasi azione non inerente all'area extra
     let page_overlay = document.getElementById("overlay");
     page_overlay.classList.toggle("d_none");
     let extra = document.getElementById("extra_area");
     extra.classList.toggle("d_none");
 }
 
+// Funzione che disattiva l'area "extra" e torna all'area precedentemente attiva
 function hide_extra()
 {
     let extra = document.getElementById("extra_area");
@@ -604,6 +631,7 @@ function hide_extra()
     page_overlay.classList.toggle("d_none");  
 }
 
+// Funzione che avvia, dentro l'area extra, la procedura di salvataggio della partita appena conclusa e vinta. Visualizza i dati essenziali e rimanda allo specifico form in index.html per l'inserimento del nome del giocatore
 function save_score()
 {
     prepare_extra();
@@ -617,38 +645,110 @@ function save_score()
     results[4].innerText = `${rows_nr}X${rows_nr}`;
 }
 
+// Funzione di call back che finalizza il salvataggio della partita appena conclusa e vinta
 user_id_form.addEventListener("submit", (id_form) => 
 {
     id_form.preventDefault();
+    // Acquisizione del nome utente digitato
     let value_ = document.getElementById('user_id').value;
+    // Inserimento in testa (prima posizione) nei relativi array, dei dati da salvare
     array_user.unshift(value_);
     array_score.unshift(score);
     array_time.unshift(time_num);
     array_penalty.unshift(penalty);
     array_level.unshift(level_str);
     array_grid.unshift(rows_nr);
+    // Sequenza di ritorno dall'area extra/salvataggio partita
     let save = document.getElementById("save_score");
     save.classList.toggle("d_none");
     hide_extra();
-    console.log(array_user);
-    console.log(array_score);
-    console.log(array_time);
-    console.log(array_penalty);
-    console.log(array_level);
-    console.log(array_grid);
-    // sort_arrays();
 });
 
+// Funzione che consente la visualizzazione dei dati relativi a tutte le partite vinte nella sessione corrente, in sequenza Last In First Out
+function show_users()
+{
+    // Collegamento alla tabella (NON TABLE TAG) contenente i dati delle partite.
+    // #table_body è elemento di tipo "ul", quindi ciascuna partita sarà un elemento di tipo "li", contenente a sua volta un "ul" con tutti i dati delle singole partite come elemento "li"
+    let table_body = document.getElementById("table_body");
+    let i = 0;
+    // Ciclo "while" che crea un numero di elementi ("li" = partita) uguale al numero di partite salvate negli array specifici
+    while (i < array_user.length)
+    {
+        let current_user = new_element("li", [], 0);
+        current_user.innerHTML = 
+        // Ciascuna "li" partita è a sua volta un "ul" i cui "li" sono i singoli dati: nome, punti, tempo,.........
+        `<ul class="d_flex data_list reset_list_style" style="padding: 3px 0; font-size: 0.7rem; border-bottom: 1px dashed darkgrey;">
+        <li>${array_user[i]}</li>
+        <li class="center_text">${array_score[i]}</li>
+        <li class="center_text">${array_time[i]}"</li>
+        <li class="center_text">${array_penalty[i]}</li>
+        <li class="center_text">${array_level[i]}</li>
+        <li class="center_text">${array_grid[i]}X${array_grid[i]}</li>
+        </ul>`;
+        table_body.append(current_user);
+        i++;
+    }
+}
+
+// Funzione di uscita dall'area extra invocata (con diverso valore del parametro), dalla funzione di visualizzazione delle partite e dalla funzione di visualizzazione delle informazioni di gioco
+function close_window(nr)
+{
+    switch (nr)
+    {
+        case 1:
+            // Caso di invocazione dal visualizzatore delle partite salvate
+            let table_body = document.getElementById("table_body");
+            table_body.innerHTML = "";
+            let scores = document.getElementById("users_scores");
+            scores.classList.toggle("d_none");
+            break;
+        case 2:
+            // Caso di invocazione dal visualizzatore delle informazioni di gioco
+            let info = document.getElementById("info_space");
+            info.classList.toggle("d_none");
+    }
+    // In entrambi i casi, all'avvenuto click sull'icona di uscita, fa seguito la disattivazione dell'area extra
+    hide_extra();
+}
+
+// Funzione di call back che da il via alla visualizzazione delle partite salvate, mediante la sequenza.....
+best_btn.addEventListener("click", function()
+{
+    // ...attivazione dell'area extra...
+    prepare_extra();
+    // ...attivazione della specifica area di visualizzazione partite salvate...
+    let scores = document.getElementById("users_scores");
+    scores.classList.toggle("d_none");
+    // ...invocazione della funzione specifica per la visualizzazione
+    show_users();
+});
+
+// Funzione di call back che attiva l'area extra e, in sequenza, attiva il visualizzatore delle informazioni di gioco
+info_btn.addEventListener("click", function()
+{
+    prepare_extra();
+    let info = document.getElementById("info_space");
+    info.classList.toggle("d_none");
+});
+// Fine del gruppo di funzioni dedicate alle attività svolte dentro l'area "extra"
+// ***************************************************
+
+// Funzione di call back che fa seguito al click sul pulsante "OK" della finestra di messaggi all'utente, consentendo la chiusura di detta finestra
 msg_btn.addEventListener("click", function()
 {    
+    // Associazione al messaggio ed occultamento dello stesso
     let msg_box = document.getElementById("message_box");
     msg_box.classList.remove("d_flex", "flex_column", "flex_cross_center");
     msg_box.classList.add("d_none");
+    // Occultamento dell'overlay
     let page_overlay = document.getElementById("overlay");
     page_overlay.classList.toggle("d_none");
+    // A seconda della situazione di gioco vengono seguite diverse strade.....
     if (game_on_going)
+    // Gioco ancora in corso....
     {
         if (starting_game)
+        // Se il gioco è appena iniziato si inizializza il timer
         {
             clock_init();
             starting_game = false;
@@ -656,30 +756,35 @@ msg_btn.addEventListener("click", function()
         }
         else
         {
+            // Altrimenti si interrompe il gioco (ha avuto luogo l'interruzione del gioco con click su icona specifica)
             console.log("Gioco appena interrotto");
             game_on_going = false;
             reset_game();
         }
     }
     else
+    // Se invece il gioco non era in corso all'atto della visualizzazione del messaggio, significa che....
     {
         msg_box.classList.remove("p_top_left");
         msg_box.classList.add("p_center");
         if (won)
         {
+            // ...si è concluso con una vittoria e quindi si passa al salvataggio della partita
             console.log("Hai vinto");
             save_score();
         }
         else
         {
+            // ...oppure con una sconfitta (click su bomba), caso in cui la visualizzazione della sequenza di sconfitta è stata già assolta altrove
             console.log("Hai perso");
         }
+        // Ad ogni modo, visto che il gioco non era in corso (partita vinta o persa), si può procedere con il reset della partita.
         reset_game();
     }
-
-
 });
 
+// Funzione che visualizza un messaggio all'utente, coincidente con il parametro "message" e posiziona un pulsante "ok", del cui click se ne occupa la funzione di call back deidicata.
+// Anche la posizione del messaggio cambia, a seconda della situazione: a centro schermo nel caso di partita in corso (inizio o interrotta) oppure in alto a sinistra in caso di partita conclusa (vinta o persa).
 function show_message(message)
 {
     let msg_box = document.getElementById("message_box");
@@ -695,18 +800,12 @@ function show_message(message)
     msg_box.firstElementChild.innerHTML = `<h2>${message}</h2>`;
 }
 
-function nav_menu_toggle(bool)
-{
-    let button_play = document.querySelector("#btn_play");
-    document.getElementById("rows_number_select").disabled = bool;
-    document.getElementById("bombs_number_select").disabled = bool;
-    button_play.disabled = bool;
-    button_play.classList.toggle("active_btn");
-}
-
+// Funzione invocata alla pressione del pulsante "play".
 function go_to_game()
 {
+    // Disabilitazione della navbar
     nav_menu_toggle(true);
+    // Recupero delle scelte di gioco (dalle select) ed inizializzazione e settaggio di tutte le variabili, contatore e non, inclusa modifica del numero di righe, nella relativa variabile all'interno del foglio di stile .css (variabile utilizzata per il calcolo del flex-basis delle celle)
     switch (document.getElementById("rows_number_select").value)
     {
         case "r_10":
@@ -747,67 +846,16 @@ function go_to_game()
             break;
     }
     cells_valid = cells_total - bombs_number;
+    // Invocazione della funzione di creazione della griglia di gioco
     create_game_grid();
     game_grid_exists = true;
     game_on_going = true;
     starting_game = true;
+    // Messaggio all'utente mediante apposita funzione
     show_message(`Ok, puoi iniziare una nuova partita con ${rows_nr} righe e ${rows_nr} colonne`);
 }
 
-function show_users()
-{
-    let table_body = document.getElementById("table_body");
-    let i = 0;
-    while (i < array_user.length)
-    {
-        let current_user = new_element("li", [], 0);
-        current_user.innerHTML = 
-        `<ul class="d_flex data_list reset_list_style" style="padding: 3px 0; font-size: 0.7rem; border-bottom: 1px dashed darkgrey;">
-        <li>${array_user[i]}</li>
-        <li class="center_text">${array_score[i]}</li>
-        <li class="center_text">${array_time[i]}"</li>
-        <li class="center_text">${array_penalty[i]}</li>
-        <li class="center_text">${array_level[i]}</li>
-        <li class="center_text">${array_grid[i]}X${array_grid[i]}</li>
-        </ul>`;
-        console.log(current_user);
-        table_body.append(current_user);
-        i++;
-    }
-}
-
-function close_window(nr)
-{
-    switch (nr)
-    {
-        case 1:
-            let table_body = document.getElementById("table_body");
-            table_body.innerHTML = "";
-            let scores = document.getElementById("users_scores");
-            scores.classList.toggle("d_none");
-            break;
-        case 2:
-            let info = document.getElementById("info_space");
-            info.classList.toggle("d_none");
-    }
-    hide_extra();
-}
-
-best_btn.addEventListener("click", function()
-{
-    prepare_extra();
-    let scores = document.getElementById("users_scores");
-    scores.classList.toggle("d_none");
-    show_users();
-});
-
-info_btn.addEventListener("click", function()
-{
-    prepare_extra();
-    let info = document.getElementById("info_space");
-    info.classList.toggle("d_none");
-});
-
+// Funzione di call back richiamata alla pressione del tasto del mouse; consente di ottenere informazioni circa il posizionamento delle celle minate ma comporta una penalità sul punteggio finale
 help_btn.addEventListener("mousedown",function()
 {
     let cell_content = document.querySelectorAll("#game_grid .with_bomb");
@@ -818,10 +866,12 @@ help_btn.addEventListener("mousedown",function()
             cell_content[i].firstChild.classList.remove("d_none");
         }
     }
+    // Incremento del contatore delle penalità e aggiornamento dei dati a schermo
     penalty++;
     update_info();
 });
 
+// Funzione di call back complementare alla precedente; viene richiamata al rilascio del tasto del mouse e nasconde, nuovamente, alla vista, le informazioni circa il posizionamento delle celle minate
 help_btn.addEventListener("mouseup",function()
 {
     let cell_content = document.querySelectorAll("#game_grid .with_bomb");
@@ -834,10 +884,12 @@ help_btn.addEventListener("mouseup",function()
     }
 });
 
+// Funzione di call back eseguita alla richiesta di annullamento della partita in corso
 stop_btn.addEventListener("click", function()
 {
-  clock_done();
-  show_message("La partita è stata chiusa.");  
+    // Interrompe immediatamente il timer e richiama la specifica funzione per mostrare un messaggio e ricominciare una nuova partita
+    clock_done();
+    show_message("La partita è stata chiusa.");  
 });
 
 // Inizializzazione dell'orologio
