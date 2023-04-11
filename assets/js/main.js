@@ -19,9 +19,7 @@
 
 
 // COSTANTI E VARIABILI GLOBALI
-
-// Array dinamico contenente gli indici delle celle che dovranno espandersi
-let     classic_game_array  = []; 
+// ******************************
 
 // Sezione relativa al numero di righe:
 // Costanti semantiche indicanti il numero di righe selezionato
@@ -31,17 +29,17 @@ const   rows_7              = 7;
 // Variabile indicante il numero di righe selezionato
 let     rows_nr             = rows_10;
 
-// Sezione relativa alla quantità di bombe presenti nel gioco:
-// Costanti semantiche, di tipo stringa, indicanti la percentuale di bombe presenti nel gioco
+// Sezione relativa alla quantità di bombe presenti nel gioco (livello di difficoltà):
+// Costanti semantiche, di tipo stringa, indicanti la percentuale di bombe presenti nel gioco (livello di difficoltà)
 const   bombs_easy          = "10%";    //valore di default
 const   bombs_medium        = "25%";
 const   bombs_hard          = "50%";
-const   b_easy              = "Bassa";    //valore di default
-const   b_medium            = "Media";
-const   b_hard              = "Alta";
-// Variabili (stringa e numerica) indicanti il numero di bombe presenti nel gioco
+const   level_easy          = "Bassa";    //valore di default
+const   level_medium        = "Media";
+const   level_hard          = "Alta";
+// Variabili (stringa e numerica) indicanti il numero di bombe presenti nel gioco (livello di difficoltà)
 let     bombs_str           = bombs_easy;   
-let     b_str               = b_easy; 
+let     level_str           = level_easy; 
 let     bombs_number        = 0;  
 // Immagine ".gif" utilizzata alla conclusione del gioco dovuta a click su cella minata
 const   explosion_gif       = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosion.gif"; 
@@ -49,13 +47,28 @@ const   explosion_gif       = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosio
 const   bomb_fa_icon        = '<i class="fa-solid fa-bomb fa-beat fa-2xl" style="color: #ff0000;"></i>';
 const   stop_fa_icon        = '<i class="fa-solid fa-xmark"></i>'; 
 
-// Sezione relativa alle costanti semantiche utilizzate nella visualizzazione/occultamento delle barre laterali
+// Sezione relativa al conta-tempo
+// Stringa di output del tempo
+let     time_str            = "";
+// Variabile numerica indicante i secondi totali di gioco
+let     time_num            = 0;
+// Variabili numeriche incrementali indicanti ore, minuti e secondi
+let     hours               = 0;
+let     minutes             = 0;
+let     seconds             = 0;   
+// Variabile associata alla funzione setInterval
+let     timer; 
+// Variabile associata all'elemento DOM corrispondente alla visualizzazione del tempo
+let     time_info_element   = document.getElementById("time_info");
+
+// Sezione relativa alle costanti semantiche utilizzate nella visualizzazione/occultamento degli elementi laterali
 const   side_bars_show      = true; 
 const   side_bars_hide      = false; 
 
 // Sezione variabili e costanti specifiche
 // Variabile punteggio
 let     score               = 0; 
+// Variabile penalità
 let     penalty             = 0; 
 // Variabili indicanti il numero di celle: totali, valide (non minate) e cliccate
 let     cells_total         = 0; 
@@ -65,26 +78,37 @@ let     cells_clicked       = 0;
 let     game_grid_exists    = false;
 // Variabile booleana indicante lo status dell'ultimo gioco: concluso o ancora in corso
 let     game_on_going       = false;
-// Variabili booleane usate in fase di conclusione gioco, rispettivamente per sconfitta o per vittoria
+// Variabile booleana indicante la conclusione del gioco per vittoria
 let     won                 = false; 
+// Variabile contatore delle marcature (click mouse tasto destro) delle celle ritenute a rischio bomba
 let     maybe_tag           = 0; 
-// Variabile associata alla griglia di gioco
+// Variabile associata all'elemento DOM corrispondente alla griglia di gioco
 let     play_ground;
-let     time_str            = "";
-let     time_num            = 0;
-let     hours               = 0;
-let     minutes             = 0;
-let     seconds             = 0;   
-let     timer; 
+// Variabile booleana di controllo che indica se si è nella fase di avvio del nuovo gioco
 let     starting_game       = true; 
-let     time_info_element   = document.getElementById("time_info");
+// Array dinamico contenente gli indici delle celle che dovranno espandersi
+let     expansion_array     = []; 
 
+// Sezione relativa agli array che conterranno i dati dei giochi vinti e salvati
+// Array utenti
 let     array_user          = [];
+// Array punteggi
 let     array_score         = [];
+// Array dei tempi di gioco
 let     array_time          = [];
+// Array delle penalità (numero di volte che si è fatto ricorso all'aiuto per vedere la disposizione delle bombe)
 let     array_penalty       = [];
-let     array_bombs         = [];
+// Array dei livelli di difficoltà
+let     array_level         = [];
+// Array delle griglie di gioco
 let     array_grid          = [];
+
+// FINE DEL RAGGRUPPAMENTO DELLE COSTANTI E VARIABILI GLOBALI
+// ******************************
+
+
+// FUNZIONI
+// ******************************
 
 // Funzione che modifica, nel file di stile (.css), il valore della variabile indicante il numero di righe (e colonne) nel gioco
 function set_row_nr_css()
@@ -94,7 +118,7 @@ function set_row_nr_css()
 }
 
 // Funzione che genera e restituisce un elemento i cui tag, classi e valore coincidono con i parametri passati
-// Le classi dell'elemento vengono passate sotto forma di array
+// Le classi dell'elemento vengono passate sotto forma di array mentre il valore viene inserito in un tag h6 con classe display none
 function new_element(tag_name, class_array, value_)
 {
     let item = document.createElement(tag_name);
@@ -106,7 +130,7 @@ function new_element(tag_name, class_array, value_)
     return item;
 }
 
-// Funzione richiamata al termine della partita. Essa rimuove la griglia di gioco e le info/menu laterali, ripristina le select nella navbar e resetta la variabile booleana "game_grid_exists"
+// Funzione richiamata al termine della partita. Rimuove la griglia di gioco e le info/menu laterali, resetta il timer e ripristina la navbar
 function reset_game()
 {
     play_ground.remove();
@@ -116,6 +140,8 @@ function reset_game()
     nav_menu_toggle(false);
 }
 
+// Funzione che calcola e restituisce i punti di penalità da applicare, a seconda del livello di difficoltà del gioco appena concluso
+// I punti di penalità sono tanto maggiori quanto minore è il livello di difficoltà
 function penalties()
 {
     switch (bombs_str)
@@ -129,7 +155,7 @@ function penalties()
     }
 }
 
-// Funzione richiamata per verificare se l'ultima cella cliccata conduca o meno alla vittoria. In caso affermativo si procede con il relativo messaggio
+// Funzione richiamata per verificare se l'ultima cella cliccata conduca o meno alla vittoria; in caso affermativo si procede con il settaggio delle specifiche variabili, lo stop del timer ed il relativo messaggio
 function check_if_win()
 {
     if (cells_clicked == cells_valid)
@@ -143,7 +169,8 @@ function check_if_win()
     }
 }
 
-// Funzione utilizzata per attivare/disattivare la menubar e la infobar relative al gioco in corso
+// Funzione utilizzata per mostrare/occultare menubar e infobar (elementi con classe .toggleable) relative al gioco in corso
+// La infobar viene mostrata/occultata per intero, mentre per quanto riguarda la menubar, solo un certo numero di suoi elementi viene mostrato/occultato
 function toggle_side_bars(show_or_hide)
 {
     let menu_list = document.querySelectorAll("#side_menu_list > .menu_item.toggleable");
@@ -170,7 +197,7 @@ function toggle_side_bars(show_or_hide)
     }
 }
 
-// Funzione che aggiorna le informazioni relativa alla partita in corso
+// Funzione che aggiorna le informazioni relativa alla partita in corso (nella infobar)
 function update_info()
 {
     document.getElementById("score_info").innerText = score;
@@ -187,27 +214,26 @@ function random_int(max)
 }
 
 // Funzione che crea le celle minate, semplicemente assegnando loro la classe "with_bomb".
+// Le celle da minare vengono selezionate in maniera randomica
 function load_bombs()
 {
     let counter = 0;
     let random_position = 0;
     let cells_array = play_ground.querySelectorAll(".cell");
     let random_item;
-    // Il primo dei due cicli "do-while" consente di allocare tutte le bombe previste dal gioco in corso
+    // Il ciclo "do-while" esterno assegna la classe "with_bomb" alle celle individuate dal ciclo "do-while" interno
     do
     {
          counter++;
-        //  Il seguente ciclo "do-while" continua a cercare posizioni libere in cui allocare le bombe
+        // Il seguente ciclo "do-while" continua a cercare posizioni libere in cui allocare le bombe
          do
          {
              random_position = random_int(cells_total);
              random_item = cells_array[random_position];
-         }
-         while (random_item.classList.contains("with_bomb"));
+         } while (random_item.classList.contains("with_bomb"));
          random_item.classList.add("with_bomb");
          random_item.innerHTML = `<h6 class="d_none">${bomb_fa_icon}</h6>`;
-    }
-    while (counter < bombs_number);
+    } while (counter < bombs_number);
 }
 
 // Funzione evocata per mostrare l'immagine ".gif" dell'esplosione, caratteristica del fine gioco per sconfitta (click su cella minata)
@@ -224,12 +250,11 @@ function hide_explosion(boom_gif)
 {
     boom_gif.remove();
     play_ground.classList.remove("p_rel");
-    console.log("esplosione finita");
 }
 
-// Gruppo di funzioni esclusive del "gioco-classico"
+// Gruppo di funzioni incaricate di gestire l'espansione delle celle libere, a seguito di click su cella non confinante con celle minate"
 // ***************************************************
-// La seguente funzione restituisce un valore numerico che identifica la posizione di una cella all'interno della griglia di gioco. La funzione distingue i quattro casi angolari, i quattro casi di prossimità ad un bordo ed il caso di "normalità", ovvero ubicazione centrale. Questa funzione viene utilizzata solo nel "gioco-classico"
+// La seguente funzione restituisce un valore numerico che identifica la posizione di una cella all'interno della griglia di gioco. La funzione distingue i quattro casi angolari, i quattro casi di prossimità ad un bordo ed il caso di "normalità", ovvero ubicazione centrale.
 function check_border_proximity(item_index)
 {
     // Nello switch si esaminano i casi in cui l'elemento indirizzato da "item_index" si trovi agli angoli della griglia
@@ -261,12 +286,12 @@ function check_border_proximity(item_index)
     return 0;
 }
 
-// Funzione che restituisce un array contenente gli indici di posizione di tutte le celle limitrofe alla cella il cui indice è passato come parametro. L'array di output ha dimensione variabile, a seconda della ubicazione della cella all'interno della griglia di gioco. L'ordine degli elementi in output (celle limitrofe a quella data) segue un andamento orario, con prima posizione occupata dalla cella in alto a destra. Questa funzione viene utilizzata solo nel "gioco-classico".
+// Funzione che restituisce un array contenente gli indici di posizione di tutte le celle limitrofe alla cella il cui indice è passato come parametro. L'array di "return" ha dimensione variabile, a seconda della ubicazione della cella all'interno della griglia di gioco. L'ordine degli elementi restituiti (celle limitrofe a quella data) segue un andamento orario, con prima posizione occupata dalla cella in alto a destra.
 function neighborhood(item_index)
 {
     let grid_border = check_border_proximity(item_index);
     let result_array = [];
-    // Si individuano tutte le celle limitrofe alla cella con indice "item_index" e le si inserisce in un array, in senso orario. Si tiene conto del fatto che la cella data potrebbe trovarsi su un bordo o in un angolo.
+    // Si individuano tutte le celle limitrofe alla cella con indice "item_index" e le si inserisce in un array, in senso orario. Si tiene conto del fatto che la cella data potrebbe trovarsi su un bordo o in un angolo (vedere funzione "check_border_proximity")
     switch (grid_border)
     {
         case 1:
@@ -330,8 +355,8 @@ function neighborhood(item_index)
     return result_array;
 }
 
-// Funzione che restituisce, per la cella il cui indice è passato come parametro, il numero di celle minate limitrofe (confinanti). Funzione usata solo nel "gioco-classico"
-function set_classic_cell(item_index)
+// Funzione che restituisce, per la cella il cui indice è passato come parametro, il numero di celle minate limitrofe (confinanti).
+function find_bombs_around(item_index)
 {
     // Acquisizione array di prossimita'
     let neighbor_array = neighborhood(item_index);
@@ -340,34 +365,40 @@ function set_classic_cell(item_index)
     for (let i = 0; i < neighbor_array.length; i++)
     {
         let current_neighbor = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`);
+        // Se current_neighbor (cella limitrofa attuale) è minata, si incrementa il contatore
         if (current_neighbor.classList.contains("with_bomb"))
         {
             bombs_around++;
         }
     }
+    // Se, alla fine del ciclo, si è individuata almeno una cella limitrofa minata, allora viene restituito l'ammontare di esse (celle limitrofe minate....)
     if (bombs_around != 0)
     {
         return bombs_around;
     }
+    // ...altrimenti si restituisce stringa vuota
     else
     {
         return "";
     }
 }
 
-// Funzione che setta ciascuna cella non minata con un numero coincidente con il numero di celle minate limitrofe. Funzione usata solo nel "gioco-classico"
-function set_classic_data()
+// Funzione che setta ciascuna cella non minata con un numero coincidente con il numero di celle minate limitrofe
+function set_bombs_around()
 {
     for (let i = 1; i <= cells_total; i++)
     {
         let current_cell = play_ground.querySelector(`.cell:nth-child(${i})`);
         if (!current_cell.classList.contains("with_bomb"))
         {
-            current_cell.innerHTML = `<h6 class="d_none">${set_classic_cell(i)}</h6>`;
+            current_cell.innerHTML = `<h6 class="d_none">${find_bombs_around(i)}</h6>`;
         }
     }
 }
+// Fine del gruppo delle funzioni deputate all'espansione delle celle libere
+// ***************************************************
 
+// Funzione impiegata per disabilitare/riabilitare il pulsante "play", a seconda del parametro (booleano)
 function btn_play_toggle(bool)
 {
     let button_play = document.querySelector("#btn_play");
@@ -375,28 +406,27 @@ function btn_play_toggle(bool)
     button_play.disabled = bool;
 }
 
-function remove_event_listener(clicked_item, index)
-{
-    console.log("evento in rimozione");
-    this.removeEventListener("click", handle_click());
-}
-
-
+// Funzione principale del gioco
+// I parametri della funzione identificano la cella appena cliccata. A seconda dello stato della cella (marcata, già cliccata o minata) si seguono comportamenti differenti
 function handle_click(clicked_item, index)
 {
+    // Step 1: si verifica se la cella sia stata precedentemente marcata come potenzialmente minata
     if (!clicked_item.classList.contains("maybe_bomb"))
     {
+        // Step 2: la cella non risulta marcata, dunque si verifica se sia stata già cliccata in precedenza
         if (!clicked_item.classList.contains("clicked_cell"))
         {
+            // Step 3: la cella non è marcata e neanche già cliccata, dunque si verifica se sia minata
             if (!clicked_item.classList.contains("with_bomb"))
             {
-                // Il parametro identifica la cella cliccata dal giocatore
-                classic_game_array.push(index);
-                // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile
+                // Step 4: cella non marcata, non precedentemente cliccata e non minata, quindi si procede con la gestione del click avvenuto
+                // Il parametro identifica la cella cliccata dal giocatore. 
+                expansion_array.push(index);
+                // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile, fino a quando non si giunge a contatto con una cella minata
                 do
                 {
                     // Il primo elemento dell'array dinamico è quello da passare al setaccio
-                    let item = classic_game_array[0];
+                    let item = expansion_array[0];
                     let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
     
                     // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
@@ -414,29 +444,33 @@ function handle_click(clicked_item, index)
                         for (let i = 0; i < neighbor_array.length; i++)
                         {
                             let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
-                            if ((!neighbor_item.classList.contains("clicked_cell")) && (!classic_game_array.includes(neighbor_array[i])))
+                            if ((!neighbor_item.classList.contains("clicked_cell")) && (!expansion_array.includes(neighbor_array[i])))
                             {
-                                classic_game_array.push(neighbor_array[i]);
+                                expansion_array.push(neighbor_array[i]);
                             }
                         }
                     }
                     // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
-                    classic_game_array.splice(0,1);
-                } while (classic_game_array.length > 0);
+                    expansion_array.splice(0,1);
+                } while (expansion_array.length > 0);
             }
             else
             {
                 // E' presente una bomba ed il gioco si conclude con la sconfitta
-                // Animazione esplosione
+                // Stop al timer
                 clock_done();
+                // Settaggio della cella come "cliccata"
                 clicked_item.classList.add("clicked_cell");
+                // Visualizzazione del contenuto della cella: icona bomba (presente, come value nel tag h6 interno alla cella stessa)
                 clicked_item.firstChild.classList.toggle("d_none");
+                // Animazione:
                 let boom_gif = new_element("img", ["p_abs", "p_center"], "");
                 boom_gif.setAttribute("src",explosion_gif);
                 boom_gif.setAttribute("alt","explosione");
                 boom_gif.setAttribute("width","260%");
                 boom_gif.setAttribute("height","100%");
                 show_explosion(boom_gif);
+                // setTimeout consente di "godersi" l'animazione, indisturbati, per 5 secondi, senza interruzioni
                 setTimeout(function()
                 {
                     hide_explosion(boom_gif);
@@ -446,19 +480,20 @@ function handle_click(clicked_item, index)
         }
         else
         {
-            // remove_event_listener(this, index);
-            // this.removeEventListener("click", handle_click(this, index));
-            console.log("check for event remove");
-
+            console.log("Cella già precedentemente cliccata");
         }
     }
 }
 
+// Gruppo di funzioni dedicate al timer di gioco
+// ***************************************************
+// Funzione di azzeramento del timer
 function clock_zero()
 {
     time_info_element.innerText = `00: 00': 00"`;
 }
 
+// Funzione che formatta le variabili ore, minuti e secondi e le invia al relativo elemento DOM per l'output
 function clock_format()
 {
     let hrs_str = hours.toString();
@@ -478,9 +513,9 @@ function clock_format()
     }
     time_str = hrs_str + ": " + min_str + "': " + sec_str + `"`;
     time_info_element.innerText = time_str;
-    console.log(time_str);
 }
 
+// Funzione richiamata ad intervalli di 1 secondo ed incaricata di incrementare e settare opportunamente le variabili temporali, per poi invocarne la formattazione e l'output
 function clock_update()
 {
     seconds++;
@@ -497,13 +532,14 @@ function clock_update()
     clock_format();
 }
 
+// Funzione richiamata a fine partita o in caso di abbandono. Essa blocca la reiterazione della funzione di aggiornamento e calcola il numero di secondi impiegati per concludere il gioco
 function clock_done()
 {
     clearInterval(timer);
     time_num = seconds + (minutes * 60) + (hours * 3600);
-    console.log(time_num);
 }
 
+// Funzione di inizializzazione del timer. Resetta tutte le variabili e imposta la reiterazione (frequenza 1 secondo) di aggiornamento e output
 function clock_init()
 {
     hours = 0;
@@ -511,8 +547,11 @@ function clock_init()
     seconds = 0;
     time_num = 0;
     time_str = "";
+    // Invocazione della funzione di aggiornamento ed output ad intervalli di 1 secondo
     timer = setInterval(function() {clock_update()},1000);
 }
+// Fine del gruppo di funzioni dedicate al timer di gioco
+// ***************************************************
 
 function create_game_grid()
 {
@@ -545,7 +584,7 @@ function create_game_grid()
         play_ground.append(element);
     }
     load_bombs();
-    set_classic_data();
+    set_bombs_around();
     document.querySelector("#main_core").append(play_ground);
 }
 
@@ -574,18 +613,8 @@ function save_score()
     results[0].innerText = `${score}`;
     results[1].innerText = `${time_num}"`;
     results[2].innerText = `${penalty}`;
-    results[3].innerText = `${b_str}`;
+    results[3].innerText = `${level_str}`;
     results[4].innerText = `${rows_nr}X${rows_nr}`;
-}
-
-function sort_arrays()
-{
-    for (let i = 0; i < array_user.length - 1; i++)
-    {
-        for (j = i + 1; j < array_bombs.user.length; j++)
-        {
-        }
-    }
 }
 
 user_id_form.addEventListener("submit", (id_form) => 
@@ -596,7 +625,7 @@ user_id_form.addEventListener("submit", (id_form) =>
     array_score.unshift(score);
     array_time.unshift(time_num);
     array_penalty.unshift(penalty);
-    array_bombs.unshift(b_str);
+    array_level.unshift(level_str);
     array_grid.unshift(rows_nr);
     let save = document.getElementById("save_score");
     save.classList.toggle("d_none");
@@ -605,7 +634,7 @@ user_id_form.addEventListener("submit", (id_form) =>
     console.log(array_score);
     console.log(array_time);
     console.log(array_penalty);
-    console.log(array_bombs);
+    console.log(array_level);
     console.log(array_grid);
     // sort_arrays();
 });
@@ -695,7 +724,7 @@ function go_to_game()
     cells_clicked = 0;
     score = 0;
     penalty = 0;
-    classic_game_array = [];
+    expansion_array = [];
     document.getElementById('user_id').innerText = 0;
     won = false;
     maybe_tag = 0;
@@ -703,17 +732,17 @@ function go_to_game()
     {
         case "bombs_10":
             bombs_str = bombs_easy;
-            b_str = b_easy;
+            level_str = level_easy;
             bombs_number = Math.floor(cells_total * 0.1);
             break;
         case "bombs_25":
             bombs_str = bombs_medium;
-            b_str = b_medium
+            level_str = level_medium
             bombs_number = Math.floor(cells_total * 0.25);
             break;
         case "bombs_50":
             bombs_str = bombs_hard;
-            b_str = b_hard;
+            level_str = level_hard;
             bombs_number = Math.floor(cells_total * 0.5);
             break;
     }
@@ -733,12 +762,12 @@ function show_users()
     {
         let current_user = new_element("li", [], 0);
         current_user.innerHTML = 
-        `<ul class="d_flex data_list reset_list_style" style="padding: 3px 0; font-size: 0.7rem;">
+        `<ul class="d_flex data_list reset_list_style" style="padding: 3px 0; font-size: 0.7rem; border-bottom: 1px dashed darkgrey;">
         <li>${array_user[i]}</li>
         <li class="center_text">${array_score[i]}</li>
         <li class="center_text">${array_time[i]}"</li>
         <li class="center_text">${array_penalty[i]}</li>
-        <li class="center_text">${array_bombs[i]}</li>
+        <li class="center_text">${array_level[i]}</li>
         <li class="center_text">${array_grid[i]}X${array_grid[i]}</li>
         </ul>`;
         console.log(current_user);
@@ -811,4 +840,5 @@ stop_btn.addEventListener("click", function()
   show_message("La partita è stata chiusa.");  
 });
 
+// Inizializzazione dell'orologio
 clock_zero();
