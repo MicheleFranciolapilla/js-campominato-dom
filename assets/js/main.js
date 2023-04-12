@@ -408,85 +408,6 @@ function nav_menu_toggle(bool)
     button_play.classList.toggle("active_btn");
 }
 
-// Funzione principale del gioco
-// I parametri della funzione identificano la cella appena cliccata. A seconda dello stato della cella (marcata, già cliccata o minata) si seguono comportamenti differenti
-function handle_click(clicked_item, clicked_item_index)
-{
-    // Step 1: si verifica se la cella sia stata precedentemente marcata come potenzialmente minata
-    if (!clicked_item.classList.contains("maybe_bomb"))
-    {
-        // Step 2: la cella non risulta marcata, dunque si verifica se sia stata già cliccata in precedenza
-        if (!clicked_item.classList.contains("clicked_cell"))
-        {
-            // Step 3: la cella non è marcata e neanche già cliccata, dunque si verifica se sia minata
-            if (!clicked_item.classList.contains("with_bomb"))
-            {
-                // Step 4: cella non marcata, non precedentemente cliccata e non minata, quindi si procede con la gestione del click avvenuto
-                // Il parametro identifica la cella cliccata dal giocatore. 
-                expansion_array.push(clicked_item_index);
-                // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile, fino a quando non si giunge a contatto con una cella minata
-                do
-                {
-                    // Il primo elemento dell'array dinamico è quello da passare al setaccio
-                    let item = expansion_array[0];
-                    let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
-    
-                    // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
-                    score++;
-                    update_info();
-                    current_item.classList.add("clicked_cell");
-                    current_item.querySelector("h6").classList.remove("d_none");
-                    cells_clicked++;
-                    check_if_win();
-                    // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
-                    if (current_item.querySelector("h6").innerHTML == "")
-                    {
-                        let neighbor_array = neighborhood(item);
-                        // Si passano al setaccio tutte le celle limitrofe a quella principale e, nel caso, le si carica nell'array dinamico
-                        for (let i = 0; i < neighbor_array.length; i++)
-                        {
-                            let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[i]})`)
-                            if ((!neighbor_item.classList.contains("clicked_cell")) && (!expansion_array.includes(neighbor_array[i])))
-                            {
-                                expansion_array.push(neighbor_array[i]);
-                            }
-                        }
-                    }
-                    // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
-                    expansion_array.splice(0,1);
-                } while (expansion_array.length > 0);
-            }
-            else
-            {
-                // E' presente una bomba ed il gioco si conclude con la sconfitta
-                // Stop al timer
-                clock_done();
-                // Settaggio della cella come "cliccata"
-                clicked_item.classList.add("clicked_cell");
-                // Visualizzazione del contenuto della cella: icona bomba (presente, come value nel tag h6 interno alla cella stessa)
-                clicked_item.firstChild.classList.toggle("d_none");
-                // Animazione:
-                let boom_gif = new_element("img", ["p_abs", "p_center"], "");
-                boom_gif.setAttribute("src",explosion_gif);
-                boom_gif.setAttribute("alt","explosione");
-                boom_gif.setAttribute("width","260%");
-                boom_gif.setAttribute("height","100%");
-                show_explosion(boom_gif);
-                // setTimeout consente di "godersi" l'animazione, indisturbati, per 5 secondi, senza interruzioni
-                setTimeout(function()
-                {
-                    hide_explosion(boom_gif);
-                    show_message("Hai cliccato su una cella minata e hai perso. <br> Ritenta, sarai più fortunato!");
-                }, 5000);
-            }
-        }
-        else
-        {
-            console.log("Cella già precedentemente cliccata");
-        }
-    }
-}
-
 // Gruppo di funzioni dedicate al timer di gioco
 // ***************************************************
 // Funzione di azzeramento del timer
@@ -570,9 +491,86 @@ function create_game_grid()
     {
         // Creazione della cella
         let element = new_element("div", ["cell", "d_flex", "flex_center"], i);
-        // Smistamento delle funzioni al click sinistro
-        element.addEventListener("click", function() {handle_click(this, i)});
-        // Smistamento delle funzioni al click destro
+
+        // Comportamento al click sinistro
+        element.addEventListener("click", function left_click(event) 
+        {
+            // Step 1: si verifica se la cella sia stata precedentemente marcata come potenzialmente minata
+            if (!this.classList.contains("maybe_bomb"))
+            {
+                // Step 2: la cella non risulta marcata, dunque si verifica se sia stata già cliccata in precedenza
+                if (!this.classList.contains("clicked_cell"))
+                {
+                    // Step 3: la cella non è marcata e neanche già cliccata, dunque si verifica se sia minata
+                    if (!this.classList.contains("with_bomb"))
+                    {
+                        // Step 4: cella non marcata, non precedentemente cliccata e non minata, quindi si procede con la gestione del click avvenuto
+                        expansion_array.push(i);
+                        // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile, fino a quando non si giunge a contatto con una cella minata
+                        do
+                        {
+                            // Il primo elemento dell'array dinamico è quello da passare al setaccio
+                            let item = expansion_array[0];
+                            let current_item = play_ground.querySelector(`.cell:nth-child(${item})`);
+                
+                            // Operazioni tipiche della cella cliccata e senza bombe + visualizzazione del dato
+                            score++;
+                            update_info();
+                            current_item.classList.add("clicked_cell");
+                            current_item.querySelector("h6").classList.remove("d_none");
+                            cells_clicked++;
+                            check_if_win();
+                            // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
+                            if (current_item.querySelector("h6").innerHTML == "")
+                            {
+                                let neighbor_array = neighborhood(item);
+                                // Si passano al setaccio tutte le celle limitrofe a quella principale e, nel caso, le si carica nell'array dinamico
+                                for (let j = 0; j < neighbor_array.length; j++)
+                                {
+                                    let neighbor_item = play_ground.querySelector(`.cell:nth-child(${neighbor_array[j]})`)
+                                    if ((!neighbor_item.classList.contains("clicked_cell")) && (!expansion_array.includes(neighbor_array[j])))
+                                    {
+                                        expansion_array.push(neighbor_array[j]);
+                                    }
+                                }
+                            }
+                            // Rimozione della cella principale e sostituzione della stessa a inizio ciclo
+                            expansion_array.splice(0,1);
+                        } while (expansion_array.length > 0);
+                    }
+                    else
+                    {
+                        // E' presente una bomba ed il gioco si conclude con la sconfitta
+                        // Stop al timer
+                        clock_done();
+                        // Settaggio della cella come "cliccata"
+                        this.classList.add("clicked_cell");
+                        // Visualizzazione del contenuto della cella: icona bomba (presente, come value nel tag h6 interno alla cella stessa)
+                        this.firstChild.classList.toggle("d_none");
+                        // Animazione:
+                        let boom_gif = new_element("img", ["p_abs", "p_center"], "");
+                        boom_gif.setAttribute("src",explosion_gif);
+                        boom_gif.setAttribute("alt","explosione");
+                        boom_gif.setAttribute("width","260%");
+                        boom_gif.setAttribute("height","100%");
+                        show_explosion(boom_gif);
+                        // setTimeout consente di "godersi" l'animazione, indisturbati, per 5 secondi, senza interruzioni
+                        setTimeout(function()
+                        {
+                            hide_explosion(boom_gif);
+                            show_message("Hai cliccato su una cella minata e hai perso. <br> Ritenta, sarai più fortunato!");
+                        }, 5000);
+                    }
+                }
+                else
+                {
+                    console.log("Cella già precedentemente cliccata. Non leggerai più questo messaggio sulla stessa cella poichè sto rimuovendo il listener");
+                    this.removeEventListener("click", left_click);
+                }
+            }
+        });
+
+        // Comportamento al click destro
         element.addEventListener("contextmenu", (right_click) => 
         {
             // Inizio della funzione di gestione del click destro
