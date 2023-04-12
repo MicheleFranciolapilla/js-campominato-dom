@@ -493,7 +493,7 @@ function create_game_grid()
         let element = new_element("div", ["cell", "d_flex", "flex_center"], i);
 
         // Comportamento al click sinistro
-        element.addEventListener("click", function left_click(event) 
+        element.addEventListener("click", function left_click() 
         {
             // // IL SEGUENTE CONTROLLO SERVE A DIMOSTRARE CHE IL REMOVE EVENT LISTENER E' STATO CORRETTAMENTE POSIZIONATO. LA CONDIZIONE NON DEVE MAI RISULTARE VERA, IN CASO CONTRARIO LA LOGICA E' SBAGLIATA!!!!!!!!!!!!!!!!!!!!
             // if (this.classList.contains("clicked_cell"))
@@ -575,7 +575,7 @@ function create_game_grid()
                 else
                 {
                      console.log("Cella già precedentemente cliccata.");
-                //     this.removeEventListener("click", left_click);
+                     this.removeEventListener("click", left_click);
                 }
                 // !!!!!!!!!!FINE REMINDER!!!!!!!!!!
             }
