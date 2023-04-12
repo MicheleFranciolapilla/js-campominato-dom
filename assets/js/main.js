@@ -495,12 +495,20 @@ function create_game_grid()
         // Comportamento al click sinistro
         element.addEventListener("click", function left_click(event) 
         {
+            // IL SEGUENTE CONTROLLO SERVE A DIMOSTRARE CHE IL REMOVE EVENT LISTENER E' STATO CORRETTAMENTE POSIZIONATO. LA CONDIZIONE NON DEVE MAI RISULTARE VERA, IN CASO CONTRARIO LA LOGICA E' SBAGLIATA!!!!!!!!!!!!!!!!!!!!
+            if (this.classList.contains("clicked_cell"))
+            {
+                console.log("C'e' un problema: il remove event listener non è stato posizionato correttamente!!!!!!!!!!")
+            }
             // Step 1: si verifica se la cella sia stata precedentemente marcata come potenzialmente minata
             if (!this.classList.contains("maybe_bomb"))
             {
                 // Step 2: la cella non risulta marcata, dunque si verifica se sia stata già cliccata in precedenza
-                if (!this.classList.contains("clicked_cell"))
-                {
+                // !!!!!!!!!!REMINDER!!!!!!!!!!
+                // Procedo al commentare il controllo (cella già cliccata?) poichè, avendo inserito il removeeventlistener tale controllo non serve più
+                // if (!this.classList.contains("clicked_cell"))
+                // {
+                // !!!!!!!!!!FINE REMINDER!!!!!!!!!!
                     // Step 3: la cella non è marcata e neanche già cliccata, dunque si verifica se sia minata
                     if (!this.classList.contains("with_bomb"))
                     {
@@ -519,6 +527,8 @@ function create_game_grid()
                             current_item.classList.add("clicked_cell");
                             current_item.querySelector("h6").classList.remove("d_none");
                             cells_clicked++;
+                            // Rimozione dell'event listener. Da ora in poi la cella non sarà più cliccabile
+                            current_item.removeEventListener("click", left_click);
                             check_if_win();
                             // Se il contenuto della cella è "0" (ovvero non confinante con celle minate) se ne analizzano le celle adiacenti e le si carica nell'array dinamico, ma solo se non ancora cliccate o presenti in detto array
                             if (current_item.querySelector("h6").innerHTML == "")
@@ -561,12 +571,14 @@ function create_game_grid()
                             show_message("Hai cliccato su una cella minata e hai perso. <br> Ritenta, sarai più fortunato!");
                         }, 5000);
                     }
-                }
-                else
-                {
-                    console.log("Cella già precedentemente cliccata. Non leggerai più questo messaggio sulla stessa cella poichè sto rimuovendo il listener");
-                    this.removeEventListener("click", left_click);
-                }
+                // !!!!!!!!!!REMINDER!!!!!!!!!!
+                // }
+                // else
+                // {
+                //     console.log("Cella già precedentemente cliccata. Non leggerai più questo messaggio sulla stessa cella poichè sto rimuovendo il listener");
+                //     this.removeEventListener("click", left_click);
+                // }
+                // !!!!!!!!!!FINE REMINDER!!!!!!!!!!
             }
         });
 
