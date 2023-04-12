@@ -410,7 +410,7 @@ function nav_menu_toggle(bool)
 
 // Funzione principale del gioco
 // I parametri della funzione identificano la cella appena cliccata. A seconda dello stato della cella (marcata, già cliccata o minata) si seguono comportamenti differenti
-function handle_click(clicked_item, index)
+function handle_click(clicked_item, clicked_item_index)
 {
     // Step 1: si verifica se la cella sia stata precedentemente marcata come potenzialmente minata
     if (!clicked_item.classList.contains("maybe_bomb"))
@@ -423,7 +423,7 @@ function handle_click(clicked_item, index)
             {
                 // Step 4: cella non marcata, non precedentemente cliccata e non minata, quindi si procede con la gestione del click avvenuto
                 // Il parametro identifica la cella cliccata dal giocatore. 
-                expansion_array.push(index);
+                expansion_array.push(clicked_item_index);
                 // Nel ciclo "do-while" si genera una sorta di albero centrifugo, in cui ciascun elemento "cella" viene reso "cliccato" e visibile, fino a quando non si giunge a contatto con una cella minata
                 do
                 {
@@ -783,7 +783,7 @@ msg_btn.addEventListener("click", function()
     }
 });
 
-// Funzione che visualizza un messaggio all'utente, coincidente con il parametro "message" e posiziona un pulsante "ok", del cui click se ne occupa la funzione di call back deidicata.
+// Funzione che visualizza un messaggio all'utente, coincidente con il parametro "message" e posiziona un pulsante "ok", del cui click se ne occupa la funzione di call back dedicata.
 // Anche la posizione del messaggio cambia, a seconda della situazione: a centro schermo nel caso di partita in corso (inizio o interrotta) oppure in alto a sinistra in caso di partita conclusa (vinta o persa).
 function show_message(message)
 {
