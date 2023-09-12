@@ -42,7 +42,8 @@ let     bombs_str               = bombs_easy;
 let     level_str               = level_easy; 
 let     bombs_number            = 0;  
 // Immagine ".gif" utilizzata alla conclusione del gioco dovuta a click su cella minata
-const   explosion_gif           = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosion.gif"; 
+// const   explosion_gif           = "https://media.tenor.com/-g-Um3DDvV0AAAAM/explosion.gif"; 
+const   explosion_gif           = "https://media.giphy.com/media/JhWQX0oZhkDPW/giphy.gif"; 
 // Icone Font Awesome usate all'occorrenza, per pulsanti menù e celle minate
 const   bomb_fa_icon            = '<i class="fa-solid fa-bomb fa-beat fa-2xl" style="color: #ff0000;"></i>';
 const   stop_fa_icon            = '<i class="fa-solid fa-xmark"></i>'; 
@@ -579,16 +580,16 @@ function create_game_grid()
                             // Animazione:
                             let boom_gif = new_element("img", ["p_abs", "p_center"], "");
                             boom_gif.setAttribute("src",explosion_gif);
-                            boom_gif.setAttribute("alt","explosione");
-                            boom_gif.setAttribute("width","260%");
+                            boom_gif.setAttribute("alt","esplosione");
+                            boom_gif.setAttribute("width","280%");
                             boom_gif.setAttribute("height","100%");
                             show_explosion(boom_gif);
-                            // setTimeout consente di "godersi" l'animazione, indisturbati, per 5 secondi, senza interruzioni
+                            // setTimeout consente di "godersi" l'animazione, indisturbati, per 2 secondi, senza interruzioni
                             setTimeout(function()
                             {
                                 hide_explosion(boom_gif);
                                 show_message("Hai cliccato su una cella minata e hai perso. <br> Ritenta, sarai più fortunato!");
-                            }, 5000);
+                            }, 1900);
                         }
                     }
                     // Cella già cliccata
