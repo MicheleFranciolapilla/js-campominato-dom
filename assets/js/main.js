@@ -16,8 +16,6 @@
 // Proviamo sempre prima con dei console.log() per capire se stiamo ricevendo i dati giusti.
 // Le validazioni e i controlli possiamo farli anche in un secondo momento.
 
-
-
 // COSTANTI E VARIABILI GLOBALI
 // ******************************
 
@@ -927,6 +925,78 @@ stop_btn.addEventListener("click", function()
     clock_done();
     show_message("La partita è stata chiusa.");  
 });
+
+// **************************************************
+const   languages           =   [
+                                    {
+                                        text    :   "Italiano",
+                                        short   :   "it",
+                                        flag    :   "./flags/it.png"
+                                    },
+                                    {
+                                        text    :   "English",
+                                        short   :   "en",
+                                        flag    :   "./flags/en.png" 
+                                    },
+                                    {
+                                        text    :   "Español",
+                                        short   :   "es",
+                                        flag    :   "./flags/es.png"
+                                    }
+                                ];  
+const   intro_overlay_style =   [
+                                    "position           :   absolute",
+                                    "z-index            :   1001",
+                                    "width              :   100%",
+                                    "height             :   100%",
+                                    "background-color   :   black",
+                                    "opacity            :   0.75",
+                                ]; 
+const   intro_view_style    =   [
+                                    "position           :   absolute",
+                                    "z-index            :   1002",
+                                    "width              :   85%",
+                                    "height             :   85%",
+                                    "background-color   :   lightgray",
+                                    "top                :   50%",
+                                    "left               :   50%",
+                                    "transform          :   translate(-50%, -50%)",
+                                    "border             :   5px solid darkgray"
+                                ];
+class   project_intro_class
+{
+    intro_overlay       = null;
+    intro_view          = null; 
+    it_msg              = "";
+    en_msg              = "";
+    es_msg              = "";
+    current_language    = 0;
+
+    constructor()
+    {
+        this.create_intro();
+    }
+
+    create_intro()
+    {
+        this.intro_overlay = document.createElement("div");
+        this.intro_overlay.setAttribute("id", "project_intro_overlay");
+        this.intro_overlay.setAttribute("style", intro_overlay_style.join("; "));
+
+        this.intro_view = document.createElement("div");
+        this.intro_view.setAttribute("id", "project_intro_view");
+        this.intro_view.setAttribute("style", intro_view_style.join("; "));
+
+        const firstDOMchild = document.body.firstChild;
+        document.body.insertBefore(this.intro_view, firstDOMchild);
+        document.body.insertBefore(this.intro_overlay,this.intro_view);
+    }
+}
+// **************************************************
+
+const run_intro = true; 
+if (run_intro)
+    var project_intro = new project_intro_class();
 
 // Inizializzazione dell'orologio
 clock_zero();
