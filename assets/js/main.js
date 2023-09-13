@@ -931,17 +931,17 @@ const   languages           =   [
                                     {
                                         text    :   "Italiano",
                                         short   :   "it",
-                                        flag    :   "./flags/it.png"
+                                        flag    :   "./assets/js/flags/it.png"
                                     },
                                     {
                                         text    :   "English",
                                         short   :   "en",
-                                        flag    :   "./flags/en.png" 
+                                        flag    :   "./assets/js/flags/en.png" 
                                     },
                                     {
                                         text    :   "Español",
                                         short   :   "es",
-                                        flag    :   "./flags/es.png"
+                                        flag    :   "./assets/js/flags/es.png"
                                     }
                                 ];  
 const   intro_overlay_style =   [
@@ -961,8 +961,34 @@ const   intro_view_style    =   [
                                     "top                :   50%",
                                     "left               :   50%",
                                     "transform          :   translate(-50%, -50%)",
-                                    "border             :   5px solid darkgray"
+                                    "border             :   5px solid darkgray",
+                                    "display            :   flex",
+                                    "flex-direction     :   column"
                                 ];
+const   intro_box_styles    =   {
+                                    flags_container     :   `
+                                                                display         :   flex;
+                                                                justify-content :   space-evenly;
+                                                                align-items     :   center;
+                                                                width           :   90%;
+                                                                height          :   15%;
+                                                                margin          :   0 auto;
+                                                            `,
+                                    flag_box            :   `
+                                                                height          :   calc(90%);
+                                                                aspect-ratio    :   1;
+                                                                border          :   3px solid blue;
+                                                                border-radius   :   50%;
+                                                                overflow        :   hidden;
+                                                            `,
+                                    flag                :   `
+                                                                object-fit      :   contain;
+                                                                object-position :   center;
+                                                                width           :   120%;
+                                                                height          :   120%;
+                                                            ` 
+                                }
+
 class   project_intro_class
 {
     intro_overlay       = null;
@@ -986,6 +1012,15 @@ class   project_intro_class
         this.intro_view = document.createElement("div");
         this.intro_view.setAttribute("id", "project_intro_view");
         this.intro_view.setAttribute("style", intro_view_style.join("; "));
+        this.intro_view.innerHTML = `
+            <div class = "flags_container" style = "${intro_box_styles.flags_container}">
+                ${languages.map(language => `
+                <div class = "flag_box" style = "${intro_box_styles.flag_box}">
+                    <img class = "flag" style = "${intro_box_styles.flag}" src = "${language.flag}" alt = "${language.text}">
+                </div>
+                                            `).join(" ")}
+            </div>
+                                    `;
 
         const firstDOMchild = document.body.firstChild;
         document.body.insertBefore(this.intro_view, firstDOMchild);
