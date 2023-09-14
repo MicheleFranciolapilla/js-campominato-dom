@@ -927,6 +927,10 @@ stop_btn.addEventListener("click", function()
 });
 
 // **************************************************
+const   start_idioma_index  =   0; 
+const   it_txt              =   "ITALIANO... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Massa sed elementum tempus egestas sed. In fermentum posuere urna nec tincidunt praesent semper feugiat nibh. Eu lobortis elementum nibh tellus molestie nunc non blandit massa. Leo a diam sollicitudin tempor id eu. Vestibulum lorem sed risus ultricies. Ut placerat orci nulla pellentesque dignissim. At augue eget arcu dictum varius duis. Dictum at tempor commodo ullamcorper a lacus vestibulum sed. Quisque non tellus orci ac auctor. Netus et malesuada fames ac turpis egestas maecenas pharetra. Amet consectetur adipiscing elit pellentesque habitant morbi tristique senectus. Risus pretium quam vulputate dignissim suspendisse in. Faucibus vitae aliquet nec ullamcorper sit amet."; 
+const   en_txt              =   "ENGLISH... Mi in nulla posuere sollicitudin aliquam. Quis auctor elit sed vulputate mi sit amet mauris commodo. Sit amet mauris commodo quis imperdiet massa tincidunt nunc. Metus aliquam eleifend mi in nulla posuere sollicitudin aliquam. Dolor sit amet consectetur adipiscing elit ut aliquam. Morbi tristique senectus et netus et. Nulla facilisi morbi tempus iaculis urna id volutpat. Faucibus purus in massa tempor nec feugiat nisl pretium. Iaculis urna id volutpat lacus. Sapien faucibus et molestie ac feugiat.";
+const   es_txt              =   "ESPAÑOL... Viverra tellus in hac habitasse platea. Ultrices vitae auctor eu augue ut lectus. Blandit libero volutpat sed cras ornare arcu dui. Eu tincidunt tortor aliquam nulla. A scelerisque purus semper eget duis at. Sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula. Urna id volutpat lacus laoreet non curabitur gravida arcu. Libero justo laoreet sit amet. Amet venenatis urna cursus eget nunc scelerisque. Lorem mollis aliquam ut porttitor leo a diam sollicitudin. Vulputate dignissim suspendisse in est ante. Adipiscing elit ut aliquam purus. Tortor at auctor urna nunc. Sapien et ligula ullamcorper malesuada proin libero nunc. Etiam non quam lacus suspendisse faucibus. Scelerisque varius morbi enim nunc faucibus a pellentesque sit amet. Sed elementum tempus egestas sed sed risus. Eget felis eget nunc lobortis.";
 const   languages           =   [
                                     {
                                         text    :   "Italiano",
@@ -957,14 +961,17 @@ const   intro_view_style    =   [
                                     "z-index            :   1002",
                                     "width              :   85%",
                                     "height             :   85%",
-                                    "background         :   linear-gradient(225deg, rgb(81, 76, 76) 50%, rgb(160, 129, 129) 80%, rgb(89, 162, 230))",
+                                    "background         :   linear-gradient(215deg, rgb(81, 76, 76) 15%, rgb(160, 129, 129) 80%, rgb(89, 162, 230))",
                                     "top                :   50%",
                                     "left               :   50%",
                                     "transform          :   translate(-50%, -50%)",
                                     "border             :   5px solid darkgray",
                                     "display            :   flex",
                                     "flex-direction     :   column",
-                                    "padding            :   5px"
+                                    "justify-content    :   space-between",
+                                    "align-items        :   center",
+                                    "padding            :   5px",
+                                    "user-select        :   none"
                                 ];
 const   intro_box_styles    =   {
                                     flags_container     :   `
@@ -972,8 +979,7 @@ const   intro_box_styles    =   {
                                                                 justify-content :   space-evenly;
                                                                 align-items     :   center;
                                                                 width           :   90%;
-                                                                height          :   17%;
-                                                                margin          :   0 auto;
+                                                                height          :   15%;
                                                             `,
                                     flag_fixed_space    :   `
                                                                 height          :   calc(90%);   
@@ -996,25 +1002,55 @@ const   intro_box_styles    =   {
                                                                 aspect-ratio    :   1;
                                                                 border-radius   :   50%;
                                                                 border          :   3px solid white;
-                                                                box-shadow      :   0 0 30px rgba(255, 255, 255, 0.95);
+                                                                box-shadow      :   0 0 15px rgba(255, 255, 255, 0.95);
                                                                 filter          :   brightness(1);
                                                             `,
                                     flag_hover          :   `
                                                                 filter          :   brightness(0.75);
-                                                            `
+                                                            `,
+                                    text_container      :   `
+                                                                width           :   95%;
+                                                                height          :   calc(70%);
+                                                                background      :   linear-gradient(135deg, #C0C0C0 15%, #D0D0D0 80%, #FFFFFF);
+                                                                color           :   #333;
+                                                                border          :   3px solid darkgray;
+                                                                font-weight     :   800;
+                                                                font-size       :   2.2rem;
+                                                                padding         :   1rem;
+                                                                overflow-y      :   auto;
+                                                            `,
+                                    button_container    :   `
+                                                                height          :   10%;
+                                                            `,
+                                    btn                 :   `
+                                                                width           :   100px;
+                                                                height          :   75%;
+                                                                border          :   3px solid darkgray;
+                                                                border-radius   :   5px;
+                                                                font-weight     :   800;
+                                                                color           :   darkgray;
+                                                                background      :   lightgray;
+                                                                cursor          :   pointer;
+                                                            `,
                                 }
 
 class   project_intro_class
 {
-    intro_overlay       = null;
-    intro_view          = null; 
-    it_msg              = "";
-    en_msg              = "";
-    es_msg              = "";
-    current_language    = 0;
+    intro_overlay       =   null;
+    intro_view          =   null; 
+    it_msg              =   "";
+    en_msg              =   "";
+    es_msg              =   "";
+    msg_array           =   [];
+    current_language    =   0;
 
-    constructor()
+    constructor(it_text, en_text, sp_text, starting_idioma)
     {
+        this.it_msg = it_text;
+        this.en_msg = en_text;
+        this.es_msg = sp_text;
+        this.msg_array.push(this.it_msg, this.en_msg, this.es_msg);
+        this.current_language = starting_idioma;
         this.create_intro();
     }
 
@@ -1045,6 +1081,8 @@ class   project_intro_class
                 this_flag.classList = this.#flag_properties(index, false);
                 this_flag.setAttribute("style", this.#flag_properties(index, true));
             });
+        let txt = document.querySelector("#text_container > p");
+        txt.innerText = this.msg_array[this.current_language];
     }
 
     create_intro()
@@ -1068,11 +1106,25 @@ class   project_intro_class
             fixed_space.innerHTML = `
                 <img class = "${this.#flag_properties(index, false)}" style = "${this.#flag_properties(index, true)}" src = "${language.flag}" alt = "${language.text}">
                                     `;
-            upper_container.appendChild(fixed_space);
+            upper_container.append(fixed_space);
         });
 
+        let central_container = document.createElement("div");
+        central_container.setAttribute("id", "text_container");
+        central_container.setAttribute("style", intro_box_styles.text_container);
+        central_container.innerHTML =   `
+            <p>${this.msg_array[this.current_language]}</p>
+                                        `;
+
+        let lower_container = document.createElement("div");
+        lower_container.setAttribute("id", "button_container");
+        lower_container.setAttribute("style", intro_box_styles.button_container);
+        lower_container.innerHTML = `
+            <button type = "button" class = "btn" style = "${intro_box_styles.btn}">OK</button>
+                                    `;
+
         const firstDOMchild = document.body.firstChild;
-        this.intro_view.append(upper_container);
+        this.intro_view.append(upper_container, central_container, lower_container);
         document.body.insertBefore(this.intro_view, firstDOMchild);
         document.body.insertBefore(this.intro_overlay,this.intro_view);
 
@@ -1105,13 +1157,39 @@ class   project_intro_class
             });
 
          });
+
+         let btn = document.querySelector("#button_container > .btn");
+
+         btn.addEventListener('mouseover', (event) => 
+         {
+            event.target.style.backgroundColor = "white";
+            event.target.style.color = "black";
+            event.target.style.borderColor = "black";
+         });
+
+         btn.addEventListener('mouseleave', (event) =>
+         {
+            event.target.setAttribute("style", intro_box_styles.btn);
+         });
+
+         btn.addEventListener('click', (event) =>
+         {
+            event.target.style.backgroundColor = "white";
+            event.target.style.color = "blue";
+            event.target.style.borderColor = "blue";
+            setTimeout(() =>
+            {
+                this.intro_overlay.remove();
+                this.intro_view.remove();
+            }, 500);
+         });
     }
 }
 // **************************************************
 
 const run_intro = true; 
 if (run_intro)
-    var project_intro = new project_intro_class();
+    var project_intro = new project_intro_class(it_txt, en_txt, es_txt, start_idioma_index);
 
 // Inizializzazione dell'orologio
 clock_zero();
