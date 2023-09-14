@@ -957,13 +957,14 @@ const   intro_view_style    =   [
                                     "z-index            :   1002",
                                     "width              :   85%",
                                     "height             :   85%",
-                                    "background-color   :   lightgray",
+                                    "background         :   linear-gradient(225deg, rgb(81, 76, 76) 50%, rgb(160, 129, 129) 80%, rgb(89, 162, 230))",
                                     "top                :   50%",
                                     "left               :   50%",
                                     "transform          :   translate(-50%, -50%)",
                                     "border             :   5px solid darkgray",
                                     "display            :   flex",
-                                    "flex-direction     :   column"
+                                    "flex-direction     :   column",
+                                    "padding            :   5px"
                                 ];
 const   intro_box_styles    =   {
                                     flags_container     :   `
@@ -971,22 +972,36 @@ const   intro_box_styles    =   {
                                                                 justify-content :   space-evenly;
                                                                 align-items     :   center;
                                                                 width           :   90%;
-                                                                height          :   15%;
+                                                                height          :   17%;
                                                                 margin          :   0 auto;
                                                             `,
-                                    flag_box            :   `
-                                                                height          :   calc(90%);
+                                    flag_fixed_space    :   `
+                                                                height          :   calc(90%);   
                                                                 aspect-ratio    :   1;
-                                                                border          :   3px solid blue;
-                                                                border-radius   :   50%;
-                                                                overflow        :   hidden;
-                                                            `,
+                                                                display         :   flex;
+                                                                justify-content :   center;
+                                                                align-items     :   center;
+                                                            `, 
                                     flag                :   `
-                                                                object-fit      :   contain;
-                                                                object-position :   center;
-                                                                width           :   120%;
-                                                                height          :   120%;
-                                                            ` 
+                                                                height          :   calc(75%);
+                                                                aspect-ratio    :   1;
+                                                                cursor          :   pointer;
+                                                                border-radius   :   50%;
+                                                                border          :   1px solid darkgray;
+                                                                box-shadow      :   0 0 5px rgba(0, 0, 0, 0.3);
+                                                                filter          :   brightness(0.5);
+                                                            `,
+                                    flag_active         :   `
+                                                                height          :   calc(100%);
+                                                                aspect-ratio    :   1;
+                                                                border-radius   :   50%;
+                                                                border          :   3px solid white;
+                                                                box-shadow      :   0 0 30px rgba(255, 255, 255, 0.95);
+                                                                filter          :   brightness(1);
+                                                            `,
+                                    flag_hover          :   `
+                                                                filter          :   brightness(0.75);
+                                                            `
                                 }
 
 class   project_intro_class
@@ -1003,6 +1018,35 @@ class   project_intro_class
         this.create_intro();
     }
 
+    #flag_properties(index, is_style)
+    {
+        if (index == this.current_language)
+        {
+            if (is_style)
+                return intro_box_styles.flag_active;
+            else
+                return "flag_active";
+        }
+        else
+        {
+            if (is_style)
+                return intro_box_styles.flag;
+            else
+                return "flag";
+        }
+    }
+
+    change_current_language(new_language_index)
+    {
+        let flags = document.querySelectorAll(".flag_fixed_space > img"); 
+        this.current_language = new_language_index;
+        flags.forEach( (this_flag, index) =>
+            {
+                this_flag.classList = this.#flag_properties(index, false);
+                this_flag.setAttribute("style", this.#flag_properties(index, true));
+            });
+    }
+
     create_intro()
     {
         this.intro_overlay = document.createElement("div");
@@ -1012,19 +1056,55 @@ class   project_intro_class
         this.intro_view = document.createElement("div");
         this.intro_view.setAttribute("id", "project_intro_view");
         this.intro_view.setAttribute("style", intro_view_style.join("; "));
-        this.intro_view.innerHTML = `
-            <div class = "flags_container" style = "${intro_box_styles.flags_container}">
-                ${languages.map(language => `
-                <div class = "flag_box" style = "${intro_box_styles.flag_box}">
-                    <img class = "flag" style = "${intro_box_styles.flag}" src = "${language.flag}" alt = "${language.text}">
-                </div>
-                                            `).join(" ")}
-            </div>
+
+        let upper_container = document.createElement("div");
+        upper_container.setAttribute("id", "flags_container");
+        upper_container.setAttribute("style", intro_box_styles.flags_container);
+        languages.forEach((language, index) => 
+        {
+            let fixed_space = document.createElement("div");
+            fixed_space.className = `flag_fixed_space ${language.short}`;
+            fixed_space.setAttribute("style", intro_box_styles.flag_fixed_space);
+            fixed_space.innerHTML = `
+                <img class = "${this.#flag_properties(index, false)}" style = "${this.#flag_properties(index, true)}" src = "${language.flag}" alt = "${language.text}">
                                     `;
+            upper_container.appendChild(fixed_space);
+        });
 
         const firstDOMchild = document.body.firstChild;
+        this.intro_view.append(upper_container);
         document.body.insertBefore(this.intro_view, firstDOMchild);
         document.body.insertBefore(this.intro_overlay,this.intro_view);
+
+        let flags = document.querySelectorAll(".flag_fixed_space > img");
+        flags.forEach( (this_flag, index) =>
+        {
+
+            this_flag.addEventListener('mouseover', (event) =>
+            {
+                if (!(index == this.current_language))
+                {
+                    event.target.setAttribute("style", `${intro_box_styles.flag} ${intro_box_styles.flag_hover}`);
+                    event.target.classList.add("flag_hover");
+                }
+            });
+
+            this_flag.addEventListener('mouseleave', (event) =>
+            {
+                if (!(index == this.current_language))
+                 {
+                    event.target.setAttribute("style", `${intro_box_styles.flag}`);
+                    event.target.className = "flag";
+                 }
+             });
+
+            this_flag.addEventListener('click', (event) =>
+            {
+                if (!(index == this.current_language))
+                    this.change_current_language(index);
+            });
+
+         });
     }
 }
 // **************************************************
