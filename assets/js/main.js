@@ -927,10 +927,26 @@ stop_btn.addEventListener("click", function()
 });
 
 // **************************************************
+// INIZIO DEL BLOCCO "PROJECT INTRO"
+// **************************************************
+
+// Costanti esterne alla classe
+
+// Lingua di riferimento all'avvio
 const   start_idioma_index  =   0; 
-const   it_txt              =   "ITALIANO... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Massa sed elementum tempus egestas sed. In fermentum posuere urna nec tincidunt praesent semper feugiat nibh. Eu lobortis elementum nibh tellus molestie nunc non blandit massa. Leo a diam sollicitudin tempor id eu. Vestibulum lorem sed risus ultricies. Ut placerat orci nulla pellentesque dignissim. At augue eget arcu dictum varius duis. Dictum at tempor commodo ullamcorper a lacus vestibulum sed. Quisque non tellus orci ac auctor. Netus et malesuada fames ac turpis egestas maecenas pharetra. Amet consectetur adipiscing elit pellentesque habitant morbi tristique senectus. Risus pretium quam vulputate dignissim suspendisse in. Faucibus vitae aliquet nec ullamcorper sit amet."; 
-const   en_txt              =   "ENGLISH... Mi in nulla posuere sollicitudin aliquam. Quis auctor elit sed vulputate mi sit amet mauris commodo. Sit amet mauris commodo quis imperdiet massa tincidunt nunc. Metus aliquam eleifend mi in nulla posuere sollicitudin aliquam. Dolor sit amet consectetur adipiscing elit ut aliquam. Morbi tristique senectus et netus et. Nulla facilisi morbi tempus iaculis urna id volutpat. Faucibus purus in massa tempor nec feugiat nisl pretium. Iaculis urna id volutpat lacus. Sapien faucibus et molestie ac feugiat.";
-const   es_txt              =   "ESPAÑOL... Viverra tellus in hac habitasse platea. Ultrices vitae auctor eu augue ut lectus. Blandit libero volutpat sed cras ornare arcu dui. Eu tincidunt tortor aliquam nulla. A scelerisque purus semper eget duis at. Sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula. Urna id volutpat lacus laoreet non curabitur gravida arcu. Libero justo laoreet sit amet. Amet venenatis urna cursus eget nunc scelerisque. Lorem mollis aliquam ut porttitor leo a diam sollicitudin. Vulputate dignissim suspendisse in est ante. Adipiscing elit ut aliquam purus. Tortor at auctor urna nunc. Sapien et ligula ullamcorper malesuada proin libero nunc. Etiam non quam lacus suspendisse faucibus. Scelerisque varius morbi enim nunc faucibus a pellentesque sit amet. Sed elementum tempus egestas sed sed risus. Eget felis eget nunc lobortis.";
+// Testo in lingua italiana
+const   it_txt              =   `<h3 style = "color : blue; text-align : center">Introduzione al progetto "Campo Minato"</h3>
+ <p style = "padding : 1rem 0">Questo progetto è stato interamente sviluppato in HTML, CSS e Javascript, senza l'utilizzo di alcuna libreria o framework.<br>Esso è stato uno dei primi esercizi del corso Boolean per Full Stack Web Developer, realizzato con basi molto limitate di Javascript.<br>Ho scelto di pubblicare questo progetto, non proprio eccezionale sotto il profilo grafico e del layout, poichè la sua realizzazione mi ha molto entusiasmato e mi sono divertito nel cercare di riprodurre (riuscendoci, senza aiuti esterni, tipo A.I.) la logica di funzionamento propria del gioco originale, nonostante ciò andasse aldilà delle richieste dei docenti.<br><br>Il progetto è stato realizzato e testato su schermo 1920 X 1080 e non è responsive, ragion per cui sarebbe preferibile visualizzarlo o giocarci su schermi desktop. Al gioco è stata aggiunta qualche funzionalità in più rispetto all'originale, come l'aiuto nell'individuazione delle mine con conseguente penalizzazione sul punteggio finale ed una finestra di informazioni sul gioco stesso.<br>Ringrazio chiunque voglia fornirmi pareri, consigli o informazioni circa eventuali errori riscontrati, direttamente al seguente contatto:</p>
+ <span style = "color : green">michele.franciolapilla@gmail.com</span>`; 
+// Testo in lingua inglese
+const   en_txt              =   `<h3 style = "color : blue; text-align : center">Introduction to the "Minesweeper" project</h3>
+<p style = "padding : 1rem 0">This project was entirely developed in HTML, CSS, and Javascript, without the use of any library or framework.<br>It was one of the first exercises of the Boolean course for Full Stack Web Developers, made with very limited bases of Javascript.<br>I chose to publish this project, not exactly exceptional from the graphic and layout profile, because its realization excited me a lot and I had fun trying to reproduce (succeeding, without external aids, like A.I.) the original game's operational logic, although this went beyond the teachers' requests.<br><br>The project was realized and tested on a 1920 X 1080 screen and is not responsive, which is why it would be preferable to view or play it on desktop screens. The game has been added with some more functionality than the original, such as help in identifying mines with a consequent penalty on the final score and an information window on the game itself.<br>I thank anyone who wants to provide me with opinions, advice, or information about any errors found, directly to the following contact:</p>
+<span style = "color : green">michele.franciolapilla@gmail.com</span>`;
+// Testo in lingua spagnola
+const   es_txt              =   `<h3 style = "color : blue; text-align : center">Introducción al proyecto "Buscaminas"</h3>
+<p style = "padding : 1rem 0">Este proyecto fue desarrollado completamente en HTML, CSS y Javascript, sin el uso de ninguna biblioteca o framework.<br>Fue uno de los primeros ejercicios del curso Boolean para Full Stack Web Developer, realizado con bases muy limitadas de Javascript.<br>Elegí publicar este proyecto, no exactamente excepcional desde el perfil gráfico y de diseño, porque su realización me entusiasmó mucho y me divertí tratando de reproducir (lográndolo, sin ayudas externas, como A.I.) la lógica operacional del juego original, aunque esto fuera más allá de las solicitudes de los profesores.<br><br>El proyecto fue realizado y probado en una pantalla de 1920 X 1080 y no es responsive, razón por la cual sería preferible verlo o jugarlo en pantallas de escritorio. Al juego se le ha añadido alguna funcionalidad más que el original, como la ayuda para identificar las minas con una penalización consecuente en la puntuación final y una ventana de información sobre el propio juego.<br>Agradezco a quien quiera proporcionarme opiniones, consejos o información sobre cualquier error encontrado, directamente al siguiente contacto:</p>
+<span style = "color : green">michele.franciolapilla@gmail.com</span>`;
+// Array con dati per ciascun idioma utilizzato
 const   languages           =   [
                                     {
                                         text    :   "Italiano",
@@ -1081,8 +1097,8 @@ class   project_intro_class
                 this_flag.classList = this.#flag_properties(index, false);
                 this_flag.setAttribute("style", this.#flag_properties(index, true));
             });
-        let txt = document.querySelector("#text_container > p");
-        txt.innerText = this.msg_array[this.current_language];
+        let txt = document.querySelector("#text_container > div");
+        txt.innerHTML = this.msg_array[this.current_language];
     }
 
     create_intro()
@@ -1113,7 +1129,7 @@ class   project_intro_class
         central_container.setAttribute("id", "text_container");
         central_container.setAttribute("style", intro_box_styles.text_container);
         central_container.innerHTML =   `
-            <p>${this.msg_array[this.current_language]}</p>
+            <div style = "font-size : 1.5rem; color : #323232;">${this.msg_array[this.current_language]}</div>
                                         `;
 
         let lower_container = document.createElement("div");
@@ -1185,11 +1201,15 @@ class   project_intro_class
          });
     }
 }
-// **************************************************
 
 const run_intro = true; 
 if (run_intro)
     var project_intro = new project_intro_class(it_txt, en_txt, es_txt, start_idioma_index);
+
+// **************************************************
+// FINE DEL BLOCCO PROJECT INTRO
+// **************************************************
+
 
 // Inizializzazione dell'orologio
 clock_zero();
