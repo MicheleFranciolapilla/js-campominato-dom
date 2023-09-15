@@ -16,8 +16,6 @@
 // Proviamo sempre prima con dei console.log() per capire se stiamo ricevendo i dati giusti.
 // Le validazioni e i controlli possiamo farli anche in un secondo momento.
 
-
-
 // COSTANTI E VARIABILI GLOBALI
 // ******************************
 
@@ -927,6 +925,291 @@ stop_btn.addEventListener("click", function()
     clock_done();
     show_message("La partita è stata chiusa.");  
 });
+
+// **************************************************
+// INIZIO DEL BLOCCO "PROJECT INTRO"
+// **************************************************
+
+// Costanti esterne alla classe
+
+// Lingua di riferimento all'avvio
+const   start_idioma_index  =   0; 
+// Testo in lingua italiana
+const   it_txt              =   `<h3 style = "color : blue; text-align : center">Introduzione al progetto "Campo Minato"</h3>
+ <p style = "padding : 1rem 0">Questo progetto è stato interamente sviluppato in HTML, CSS e Javascript, senza l'utilizzo di alcuna libreria o framework.<br>Esso è stato uno dei primi esercizi del corso Boolean per Full Stack Web Developer, realizzato con basi molto limitate di Javascript.<br>Ho scelto di pubblicare questo progetto, non proprio eccezionale sotto il profilo grafico e del layout, poichè la sua realizzazione mi ha molto entusiasmato e mi sono divertito nel cercare di riprodurre (riuscendoci, senza aiuti esterni, tipo A.I.) la logica di funzionamento propria del gioco originale, nonostante ciò andasse aldilà delle richieste dei docenti.<br><br>Il progetto è stato realizzato e testato su schermo 1920 X 1080 e non è responsive, ragion per cui sarebbe preferibile visualizzarlo o giocarci su schermi desktop. Al gioco è stata aggiunta qualche funzionalità in più rispetto all'originale, come l'aiuto nell'individuazione delle mine con conseguente penalizzazione sul punteggio finale ed una finestra di informazioni sul gioco stesso.<br>Ringrazio chiunque voglia fornirmi pareri, consigli o informazioni circa eventuali errori riscontrati, direttamente al seguente contatto:</p>
+ <span style = "color : green">michele.franciolapilla@gmail.com</span>`; 
+// Testo in lingua inglese
+const   en_txt              =   `<h3 style = "color : blue; text-align : center">Introduction to the "Minesweeper" project</h3>
+<p style = "padding : 1rem 0">This project was entirely developed in HTML, CSS, and Javascript, without the use of any library or framework.<br>It was one of the first exercises of the Boolean course for Full Stack Web Developers, made with very limited bases of Javascript.<br>I chose to publish this project, not exactly exceptional from the graphic and layout profile, because its realization excited me a lot and I had fun trying to reproduce (succeeding, without external aids, like A.I.) the original game's operational logic, although this went beyond the teachers' requests.<br><br>The project was realized and tested on a 1920 X 1080 screen and is not responsive, which is why it would be preferable to view or play it on desktop screens. The game has been added with some more functionality than the original, such as help in identifying mines with a consequent penalty on the final score and an information window on the game itself.<br>I thank anyone who wants to provide me with opinions, advice, or information about any errors found, directly to the following contact:</p>
+<span style = "color : green">michele.franciolapilla@gmail.com</span>`;
+// Testo in lingua spagnola
+const   es_txt              =   `<h3 style = "color : blue; text-align : center">Introducción al proyecto "Buscaminas"</h3>
+<p style = "padding : 1rem 0">Este proyecto fue desarrollado completamente en HTML, CSS y Javascript, sin el uso de ninguna biblioteca o framework.<br>Fue uno de los primeros ejercicios del curso Boolean para Full Stack Web Developer, realizado con bases muy limitadas de Javascript.<br>Elegí publicar este proyecto, no exactamente excepcional desde el perfil gráfico y de diseño, porque su realización me entusiasmó mucho y me divertí tratando de reproducir (lográndolo, sin ayudas externas, como A.I.) la lógica operacional del juego original, aunque esto fuera más allá de las solicitudes de los profesores.<br><br>El proyecto fue realizado y probado en una pantalla de 1920 X 1080 y no es responsive, razón por la cual sería preferible verlo o jugarlo en pantallas de escritorio. Al juego se le ha añadido alguna funcionalidad más que el original, como la ayuda para identificar las minas con una penalización consecuente en la puntuación final y una ventana de información sobre el propio juego.<br>Agradezco a quien quiera proporcionarme opiniones, consejos o información sobre cualquier error encontrado, directamente al siguiente contacto:</p>
+<span style = "color : green">michele.franciolapilla@gmail.com</span>`;
+// Array con dati per ciascun idioma utilizzato
+const   languages           =   [
+                                    {
+                                        text    :   "Italiano",
+                                        short   :   "it",
+                                        flag    :   "./assets/js/flags/it.png"
+                                    },
+                                    {
+                                        text    :   "English",
+                                        short   :   "en",
+                                        flag    :   "./assets/js/flags/en.png" 
+                                    },
+                                    {
+                                        text    :   "Español",
+                                        short   :   "es",
+                                        flag    :   "./assets/js/flags/es.png"
+                                    }
+                                ];  
+const   intro_overlay_style =   [
+                                    "position           :   absolute",
+                                    "z-index            :   1001",
+                                    "width              :   100%",
+                                    "height             :   100%",
+                                    "background-color   :   black",
+                                    "opacity            :   0.75",
+                                ]; 
+const   intro_view_style    =   [
+                                    "position           :   absolute",
+                                    "z-index            :   1002",
+                                    "width              :   85%",
+                                    "height             :   85%",
+                                    "background         :   linear-gradient(215deg, rgb(81, 76, 76) 15%, rgb(160, 129, 129) 80%, rgb(89, 162, 230))",
+                                    "top                :   50%",
+                                    "left               :   50%",
+                                    "transform          :   translate(-50%, -50%)",
+                                    "border             :   5px solid darkgray",
+                                    "display            :   flex",
+                                    "flex-direction     :   column",
+                                    "justify-content    :   space-between",
+                                    "align-items        :   center",
+                                    "padding            :   5px",
+                                    "user-select        :   none"
+                                ];
+const   intro_box_styles    =   {
+                                    flags_container     :   `
+                                                                display         :   flex;
+                                                                justify-content :   space-evenly;
+                                                                align-items     :   center;
+                                                                width           :   90%;
+                                                                height          :   15%;
+                                                            `,
+                                    flag_fixed_space    :   `
+                                                                height          :   calc(90%);   
+                                                                aspect-ratio    :   1;
+                                                                display         :   flex;
+                                                                justify-content :   center;
+                                                                align-items     :   center;
+                                                            `, 
+                                    flag                :   `
+                                                                height          :   calc(75%);
+                                                                aspect-ratio    :   1;
+                                                                cursor          :   pointer;
+                                                                border-radius   :   50%;
+                                                                border          :   1px solid darkgray;
+                                                                box-shadow      :   0 0 5px rgba(0, 0, 0, 0.3);
+                                                                filter          :   brightness(0.5);
+                                                            `,
+                                    flag_active         :   `
+                                                                height          :   calc(100%);
+                                                                aspect-ratio    :   1;
+                                                                border-radius   :   50%;
+                                                                border          :   3px solid white;
+                                                                box-shadow      :   0 0 15px rgba(255, 255, 255, 0.95);
+                                                                filter          :   brightness(1);
+                                                            `,
+                                    flag_hover          :   `
+                                                                filter          :   brightness(0.75);
+                                                            `,
+                                    text_container      :   `
+                                                                width           :   95%;
+                                                                height          :   calc(70%);
+                                                                background      :   linear-gradient(135deg, #C0C0C0 15%, #D0D0D0 80%, #FFFFFF);
+                                                                color           :   #333;
+                                                                border          :   3px solid darkgray;
+                                                                font-weight     :   800;
+                                                                font-size       :   2.2rem;
+                                                                padding         :   1rem;
+                                                                overflow-y      :   auto;
+                                                            `,
+                                    button_container    :   `
+                                                                height          :   10%;
+                                                            `,
+                                    btn                 :   `
+                                                                width           :   100px;
+                                                                height          :   75%;
+                                                                border          :   3px solid darkgray;
+                                                                border-radius   :   5px;
+                                                                font-weight     :   800;
+                                                                color           :   darkgray;
+                                                                background      :   lightgray;
+                                                                cursor          :   pointer;
+                                                            `,
+                                }
+
+class   project_intro_class
+{
+    intro_overlay       =   null;
+    intro_view          =   null; 
+    it_msg              =   "";
+    en_msg              =   "";
+    es_msg              =   "";
+    msg_array           =   [];
+    current_language    =   0;
+
+    constructor(it_text, en_text, sp_text, starting_idioma)
+    {
+        this.it_msg = it_text;
+        this.en_msg = en_text;
+        this.es_msg = sp_text;
+        this.msg_array.push(this.it_msg, this.en_msg, this.es_msg);
+        this.current_language = starting_idioma;
+        this.create_intro();
+    }
+
+    #flag_properties(index, is_style)
+    {
+        if (index == this.current_language)
+        {
+            if (is_style)
+                return intro_box_styles.flag_active;
+            else
+                return "flag_active";
+        }
+        else
+        {
+            if (is_style)
+                return intro_box_styles.flag;
+            else
+                return "flag";
+        }
+    }
+
+    change_current_language(new_language_index)
+    {
+        let flags = document.querySelectorAll(".flag_fixed_space > img"); 
+        this.current_language = new_language_index;
+        flags.forEach( (this_flag, index) =>
+            {
+                this_flag.classList = this.#flag_properties(index, false);
+                this_flag.setAttribute("style", this.#flag_properties(index, true));
+            });
+        let txt = document.querySelector("#text_container > div");
+        txt.innerHTML = this.msg_array[this.current_language];
+    }
+
+    create_intro()
+    {
+        this.intro_overlay = document.createElement("div");
+        this.intro_overlay.setAttribute("id", "project_intro_overlay");
+        this.intro_overlay.setAttribute("style", intro_overlay_style.join("; "));
+
+        this.intro_view = document.createElement("div");
+        this.intro_view.setAttribute("id", "project_intro_view");
+        this.intro_view.setAttribute("style", intro_view_style.join("; "));
+
+        let upper_container = document.createElement("div");
+        upper_container.setAttribute("id", "flags_container");
+        upper_container.setAttribute("style", intro_box_styles.flags_container);
+        languages.forEach((language, index) => 
+        {
+            let fixed_space = document.createElement("div");
+            fixed_space.className = `flag_fixed_space ${language.short}`;
+            fixed_space.setAttribute("style", intro_box_styles.flag_fixed_space);
+            fixed_space.innerHTML = `
+                <img class = "${this.#flag_properties(index, false)}" style = "${this.#flag_properties(index, true)}" src = "${language.flag}" alt = "${language.text}">
+                                    `;
+            upper_container.append(fixed_space);
+        });
+
+        let central_container = document.createElement("div");
+        central_container.setAttribute("id", "text_container");
+        central_container.setAttribute("style", intro_box_styles.text_container);
+        central_container.innerHTML =   `
+            <div style = "font-size : 1.5rem; color : #323232;">${this.msg_array[this.current_language]}</div>
+                                        `;
+
+        let lower_container = document.createElement("div");
+        lower_container.setAttribute("id", "button_container");
+        lower_container.setAttribute("style", intro_box_styles.button_container);
+        lower_container.innerHTML = `
+            <button type = "button" class = "btn" style = "${intro_box_styles.btn}">OK</button>
+                                    `;
+
+        const firstDOMchild = document.body.firstChild;
+        this.intro_view.append(upper_container, central_container, lower_container);
+        document.body.insertBefore(this.intro_view, firstDOMchild);
+        document.body.insertBefore(this.intro_overlay,this.intro_view);
+
+        let flags = document.querySelectorAll(".flag_fixed_space > img");
+        flags.forEach( (this_flag, index) =>
+        {
+
+            this_flag.addEventListener('mouseover', (event) =>
+            {
+                if (!(index == this.current_language))
+                {
+                    event.target.setAttribute("style", `${intro_box_styles.flag} ${intro_box_styles.flag_hover}`);
+                    event.target.classList.add("flag_hover");
+                }
+            });
+
+            this_flag.addEventListener('mouseleave', (event) =>
+            {
+                if (!(index == this.current_language))
+                 {
+                    event.target.setAttribute("style", `${intro_box_styles.flag}`);
+                    event.target.className = "flag";
+                 }
+             });
+
+            this_flag.addEventListener('click', (event) =>
+            {
+                if (!(index == this.current_language))
+                    this.change_current_language(index);
+            });
+
+         });
+
+         let btn = document.querySelector("#button_container > .btn");
+
+         btn.addEventListener('mouseover', (event) => 
+         {
+            event.target.style.backgroundColor = "white";
+            event.target.style.color = "black";
+            event.target.style.borderColor = "black";
+         });
+
+         btn.addEventListener('mouseleave', (event) =>
+         {
+            event.target.setAttribute("style", intro_box_styles.btn);
+         });
+
+         btn.addEventListener('click', (event) =>
+         {
+            event.target.style.backgroundColor = "white";
+            event.target.style.color = "blue";
+            event.target.style.borderColor = "blue";
+            setTimeout(() =>
+            {
+                this.intro_overlay.remove();
+                this.intro_view.remove();
+            }, 500);
+         });
+    }
+}
+
+const run_intro = true; 
+if (run_intro)
+    var project_intro = new project_intro_class(it_txt, en_txt, es_txt, start_idioma_index);
+
+// **************************************************
+// FINE DEL BLOCCO PROJECT INTRO
+// **************************************************
+
 
 // Inizializzazione dell'orologio
 clock_zero();
