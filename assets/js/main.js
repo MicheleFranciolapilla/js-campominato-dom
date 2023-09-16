@@ -966,7 +966,8 @@ const   languages           =   [
                                         short   :   "es",
                                         flag    :   "./assets/js/flags/es.png"
                                     }
-                                ];  
+                                ]; 
+// Proprietà di stile (raccolte in array) relative allo sfondo statico di overlay 
 const   intro_overlay_style =   [
                                     "position           :   absolute",
                                     "z-index            :   1001",
@@ -975,6 +976,7 @@ const   intro_overlay_style =   [
                                     "background-color   :   black",
                                     "opacity            :   0.75",
                                 ]; 
+// Proprietà di stile (raccolte in array) relative alla finestra dinamica di introduzione al progetto
 const   intro_view_style    =   [
                                     "position           :   absolute",
                                     "z-index            :   1002",
@@ -992,6 +994,7 @@ const   intro_view_style    =   [
                                     "padding            :   5px",
                                     "user-select        :   none"
                                 ];
+// Proprietà di stile (raccolte sotto forma di stringa) relative ai singoli elementi (campi dell'oggetto "intro_box_styles") della finestra dinamica
 const   intro_box_styles    =   {
                                     flags_container     :   `
                                                                 display         :   flex;
@@ -1053,6 +1056,7 @@ const   intro_box_styles    =   {
                                                             `,
                                 }
 
+// Classe deputata alla creazione, gestione e rimozione della finestra dinamica di introduzione al progetto
 class   project_intro_class
 {
     intro_overlay       =   null;
@@ -1063,6 +1067,7 @@ class   project_intro_class
     msg_array           =   [];
     current_language    =   0;
 
+    // Costruttore della classe con funzione di inizializzazione proprietà ed invocazione del metodo per la gestione del DOM
     constructor(it_text, en_text, sp_text, starting_idioma)
     {
         this.it_msg = it_text;
@@ -1073,6 +1078,7 @@ class   project_intro_class
         this.create_intro();
     }
 
+    // Metodo "private" che restituisce la stringa identificativa della classe oppure la stringa composta da tutte le proprietà di stile (a seconda del valore del parametro booleano "is_style") da associare all'elemento <img> (flag) chiamante
     #flag_properties(index, is_style)
     {
         if (index == this.current_language)
@@ -1091,43 +1097,53 @@ class   project_intro_class
         }
     }
 
+    // Metodo invocato al cambio della lingua attiva (mediante click su bandiera)
     change_current_language(new_language_index)
     {
         let flags = document.querySelectorAll(".flag_fixed_space > img"); 
+        // Dopo aver settato il nuovo valore della lingua attiva, nel conseguente forEach si assegnano classi e stili a ciascun elemento <img> (flag)
         this.current_language = new_language_index;
         flags.forEach( (this_flag, index) =>
             {
                 this_flag.classList = this.#flag_properties(index, false);
                 this_flag.setAttribute("style", this.#flag_properties(index, true));
             });
+        // In ultimo si procede al caricamento del testo nella nuova lingua
         let txt = document.querySelector("#text_container > div");
         txt.innerHTML = this.msg_array[this.current_language];
     }
 
+    // Metodo principale della classe; si occupa di tutta la gestione del DOM, dalla creazione e gestione, fino alla rimozione della finestra di visualizzazione dell'introduzione al progetto
     create_intro()
     {
+        // Creazione dello sfondo di overlay
         this.intro_overlay = document.createElement("div");
         this.intro_overlay.setAttribute("id", "project_intro_overlay");
         this.intro_overlay.setAttribute("style", intro_overlay_style.join("; "));
 
+        // Creazione della finestra di visualizzazione dell'introduzione al progetto
         this.intro_view = document.createElement("div");
         this.intro_view.setAttribute("id", "project_intro_view");
         this.intro_view.setAttribute("style", intro_view_style.join("; "));
 
+        // Creazione della sezione superiore, contenente le bandiere
         let upper_container = document.createElement("div");
         upper_container.setAttribute("id", "flags_container");
         upper_container.setAttribute("style", intro_box_styles.flags_container);
+        // Le bandiere vengono collocate in contenitori di dimensione fissa per evitare la riformattazione di tutto il gruppo ad ogni cambio di idioma
         languages.forEach((language, index) => 
         {
             let fixed_space = document.createElement("div");
             fixed_space.className = `flag_fixed_space ${language.short}`;
             fixed_space.setAttribute("style", intro_box_styles.flag_fixed_space);
+            // Creazione dei singoli elementi <img> (flags) con opportune classi e stili css
             fixed_space.innerHTML = `
                 <img class = "${this.#flag_properties(index, false)}" style = "${this.#flag_properties(index, true)}" src = "${language.flag}" alt = "${language.text}">
                                     `;
-            upper_container.append(fixed_space);
+            upper_container.appendChild(fixed_space);
         });
 
+        // Creazione della sezione centrale, contenente il testo
         let central_container = document.createElement("div");
         central_container.setAttribute("id", "text_container");
         central_container.setAttribute("style", intro_box_styles.text_container);
@@ -1135,6 +1151,7 @@ class   project_intro_class
             <div style = "font-size : 1.5rem; color : #323232;">${this.msg_array[this.current_language]}</div>
                                         `;
 
+        // Creazione della sezione inferiore, contenente il pulsante per chiudere la finestra di intro ed accedere al progetto
         let lower_container = document.createElement("div");
         lower_container.setAttribute("id", "button_container");
         lower_container.setAttribute("style", intro_box_styles.button_container);
@@ -1142,15 +1159,18 @@ class   project_intro_class
             <button type = "button" class = "btn" style = "${intro_box_styles.btn}">OK</button>
                                     `;
 
+        // Dopo la creazione dei vari elementi si procede al collegamento degli stessi al DOM, nell'ordine corretto
         const firstDOMchild = document.body.firstChild;
         this.intro_view.append(upper_container, central_container, lower_container);
         document.body.insertBefore(this.intro_view, firstDOMchild);
         document.body.insertBefore(this.intro_overlay,this.intro_view);
 
+        // Si procede con l'associazione, a ciascun elemento <img> (flags) dei vari "ascoltatori di evento" che gestiranno gli eventi mouse di tipo over, leave e click
         let flags = document.querySelectorAll(".flag_fixed_space > img");
         flags.forEach( (this_flag, index) =>
         {
 
+            // L'over del mouse produrrà cambio di stile solo se l'elemento <img> non è attivo
             this_flag.addEventListener('mouseover', (event) =>
             {
                 if (!(index == this.current_language))
@@ -1160,6 +1180,7 @@ class   project_intro_class
                 }
             });
 
+            // L'over del mouse produrrà cambio di stile solo se l'elemento <img> non è attivo
             this_flag.addEventListener('mouseleave', (event) =>
             {
                 if (!(index == this.current_language))
@@ -1169,6 +1190,7 @@ class   project_intro_class
                  }
              });
 
+            // Il click sull'elemento <img> avrà effetto solo se l'elemento non è al momento attivo, producendo il cambio di idioma
             this_flag.addEventListener('click', (event) =>
             {
                 if (!(index == this.current_language))
@@ -1177,6 +1199,7 @@ class   project_intro_class
 
          });
 
+         // Si procede con l'associazione, all'elemento <button> (pulsante di chiusura intro) dei vari "ascoltatori di evento" che gestiranno gli eventi mouse di tipo over, leave e click
          let btn = document.querySelector("#button_container > .btn");
 
          btn.addEventListener('mouseover', (event) => 
@@ -1191,6 +1214,7 @@ class   project_intro_class
             event.target.setAttribute("style", intro_box_styles.btn);
          });
 
+         // In caso di click si procede alla rimozione degli elementi dal DOM, nell'ordine corretto, accedendo così, direttamente al progetto
          btn.addEventListener('click', (event) =>
          {
             event.target.style.backgroundColor = "white";
@@ -1205,6 +1229,7 @@ class   project_intro_class
     }
 }
 
+// Si utilizza un booleano di controllo per consentire di selezionare (a priori) se il progetto debba avere oppure no, la finestra di introduzione al progetto stesso
 const run_intro = true; 
 if (run_intro)
     var project_intro = new project_intro_class(it_txt, en_txt, es_txt, start_idioma_index);
