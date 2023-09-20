@@ -1229,8 +1229,9 @@ class   project_intro_class
     }
 }
 
-// Si utilizza un booleano di controllo per consentire di selezionare (a priori) se il progetto debba avere oppure no, la finestra di introduzione al progetto stesso
-const run_intro = true; 
+// Si ricerca, nell'URL digitato, il parametro "no-intro"; a seconda dell'esito si assegna alla costante "run_intro" il corretto valore per avere o meno la sezione introduttiva.
+let params = new URLSearchParams(window.location.search);
+const run_intro = !(params.has('no-intro'));
 if (run_intro)
     var project_intro = new project_intro_class(it_txt, en_txt, es_txt, start_idioma_index);
 
